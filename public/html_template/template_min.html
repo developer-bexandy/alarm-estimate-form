@@ -1,0 +1,649 @@
+<style>
+    .calculator__wrapper * {
+        box-sizing: border-box;
+
+    }
+
+    .calculator__wrapper{
+        font-size: 20px;
+    }
+    .calculator__wrapper input[type=checkbox] {display: none;}
+
+    .calculator__wrapper input[type=checkbox] + label:before {
+        content: "\2713";
+        color: transparent;
+        display: inline-block;
+    border: 2px solid {%textcolor%};
+    border-radius: 5px;
+    font-size: 40px;
+    font-weight: bold;
+    line-height: 32px;
+    margin: 5px 10px 10px 0;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    vertical-align: middle;
+    transition: color ease .3s;
+    }
+
+    .calculator__wrapper input[type=checkbox] + label.invalid:before{
+        border: 2px solid red;
+    }
+
+    .calculator__wrapper input[type=checkbox]:checked + label:before {
+        color: #f1933f;
+    }
+    .calculator__wrapper .calculator__tabs-wrapper{
+        display: flex;
+        flex-flow: row nowrap;
+        background: #e5e5e6;
+        margin-bottom: 50px;
+        color: #999999;
+        width: 100%;
+    }
+    .calculator__wrapper .calculator__tab{
+        height: 50px;
+        width: 36%;
+        display: flex;
+        align-items: center;
+        padding-left: 30px;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .calculator__wrapper .calculator__tab--first{
+        padding-left: 10px;
+    }
+
+    .calculator__wrapper .calculator__tab--triangle{
+        position: relative;
+        box-shadow: 35px 0px 30px -6px rgba(0,0,0,0.3);
+        width: 32%;
+    }
+
+    .calculator__wrapper .calculator__tab--triangle::after {
+        content: '';
+        border: 30px solid transparent;
+        border-top-width: 25px;
+        border-bottom-width: 25px;
+        border-left-color: #e5e5e6;
+        position: absolute;
+        right: -29px;
+        border-right: 0;
+        z-index: 9;
+    }
+
+    .calculator__wrapper .tab__circle{
+        font-size: 24px;
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        border: 3px solid white;
+        color: #fff;
+        background: #969696;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    .calculator__wrapper .tab__descr{
+        text-align: center;
+    }
+
+    .calculator__wrapper .calculator__tab--active{
+        background: #a0a0a0;
+        color: #fff;
+    }
+
+    .calculator__wrapper .calculator__tab--active.calculator__tab--triangle::after{
+        content: '';
+        border: 30px solid transparent;
+        border-top-width: 25px;
+        border-bottom-width: 25px;
+        border-left-color: #a0a0a0;
+        right: -59px;
+    }
+
+    .calculator__wrapper .calculator__tab--active .tab__circle{
+        background: #f1933f;
+        border: 3px solid #f1933f;
+    }
+
+    .calculator__wrapper .calculator__tab--done{
+        background: #727272;
+        color: #fff;
+    }
+
+    .calculator__wrapper .calculator__tab--done.calculator__tab--triangle::after{
+        content: '';
+        border: 30px solid transparent;
+        border-top-width: 25px;
+        border-bottom-width: 25px;
+        border-left-color: #727272;
+        right: -59px;
+    }
+    @media only screen and (max-width: 900px) {
+        .calculator__wrapper .tab__descr {
+            font-size: 16px;
+        }
+    }
+
+    @media only screen and (max-width: 500px) {
+
+        .calculator__tab--last{
+            padding-right: 10px;
+        }
+
+        .calculator__wrapper .calculator__tab{
+            height: 30px;
+            width: 33.3333%;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+
+        .calculator__wrapper .calculator__tab--triangle::after{
+            content: '';
+            border: 21px solid transparent;
+            border-top-width: 18px;
+            border-bottom-width: 18px;
+            border-left-color: #e5e5e6;
+            position: absolute;
+            right: -20px;
+            border-right: 0;
+            z-index: 9;
+        }
+        .calculator__wrapper .calculator__tab--done.calculator__tab--triangle::after{
+            content: '';
+            border: 21px solid transparent;
+            border-top-width: 15px;
+            border-bottom-width: 15px;
+            border-left-color: #727272;
+            right: -41px;
+        }
+        .calculator__wrapper .calculator__tab--active.calculator__tab--triangle::after{
+            content: '';
+            border: 21px solid transparent;
+            border-top-width: 15px;
+            border-bottom-width: 15px;
+            border-left-color: #a0a0a0;
+            right: -41px;
+        }
+        .calculator__wrapper .calculator__tab--triangle{
+            box-shadow: 35px 0px 55px -6px rgba(0,0,0,0.3);
+        }
+        .calculator__wrapper .tab__circle{
+            height: 30px;
+            width: 30px;
+        }
+
+        .calculator__wrapper .tab__descr{
+            display: none;
+        }
+    }
+
+    .calculator__wrapper .calculator__question{
+        padding: 20px;
+        width: 100%;
+    color: {%textcolor%}
+    }
+
+    .calculator__wrapper .question-descr{
+        font-size: 24px;
+        margin: 24px 0;
+        text-align: center;
+    }
+
+    .calculator__wrapper .question{
+        margin-left: 20px;
+    }
+
+    .calculator__wrapper .question__input{
+    border: 2px solid {%textcolor%};
+    background-color: transparent;
+    padding: 10px;
+    font-size: 16px !important;
+    border-radius: 10px;
+    outline: none;
+    width: 200px;
+    margin: 0;
+    }
+
+    .calculator__wrapper .question__input-wrapper{
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .calculator__wrapper .question__button{
+        padding: 10px;
+        cursor: pointer;
+        margin-left: 15px;
+        color: #fff;
+        border-radius: 10px;
+        background: #f1933f;
+        border: 3px solid #f1933f;
+        transition: background .3s ease-in-out,
+        border .3s ease-in-out;
+    }
+
+    .calculator__wrapper .question__button:hover{
+        background: #D97C3F;
+        border: 3px solid #D97C3F;
+    }
+
+    .calculator__question--hogar, .calculator__question--negocio{
+        display: none;
+    }
+    .question--horar, .question--negocio {
+        display: none;
+    }
+
+
+    .calculator__wrapper .tab3__row{
+        display: flex;
+        width: 100%;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .calculator__wrapper .tab3__descr{
+        width: 44%;
+        margin-right: 20px;
+        text-align: right;
+    }
+
+    .calculator__wrapper .tab3__descr small{
+        color: #f1933f;
+    }
+
+    .calculator__wrapper .tab3__input{
+        width: 70%;
+    }
+
+    .calculator__wrapper .tab3__link{
+        text-decoration: none;
+        color: #f1933f;
+    }
+
+    .calculator__wrapper .tab3__link:hover{
+        text-decoration: underline;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .calculator__wrapper{
+            font-size: 16px;
+        }
+        .calculator__wrapper .question-descr{
+            font-size: 18px;
+        }
+    }
+
+    @media only screen and (max-width: 525px){
+        .calculator__wrapper .tab3__row{
+            flex-flow: row wrap;
+        }
+        .calculator__wrapper .tab3__descr{
+            width: 100%;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .calculator__wrapper .tab3__input--teléfono{
+            display: flex;
+            flex-flow: column nowrap;
+        }
+        .calculator__wrapper .tab3__input--teléfono .question__input{
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .calculator__wrapper .tab3__input .question__input{
+            width: 100%;
+        }
+    }
+
+    .calculator__wrapper .calcula-button{
+        margin: 0 auto;
+    }
+    .calculator__question label{
+        float: none;
+        width: auto;
+    }
+
+    @media only screen and (max-width: 450px){
+        .calculator__wrapper .question__button{
+
+        }
+
+        .calculator__wrapper .calcula-button{
+            transform: translateX(20%);
+            margin: 0;
+        }
+    }
+    @media only screen and (max-width: 325px){
+        .calculator__wrapper .question__button{
+            margin-top: 10px;
+        }
+    }
+
+</style>
+<div class="calculator__wrapper">
+
+    <div class="calculator__tabs-wrapper ">
+        <div class="calculator__tab calculator__tab--active calculator__tab--first calculator__tab--triangle">
+            <span class="tab__circle">1</span>
+            <span class="tab__descr">¿Que necesitas?</span>
+        </div>
+
+        <div class="calculator__tab calculator__tab--second calculator__tab--triangle">
+            <span class="tab__circle">2</span>
+            <span class="tab__descr">Seguridad actual</span>
+        </div>
+
+        <div class="calculator__tab calculator__tab--third calculator__tab--last">
+            <span class="tab__circle">3</span>
+            <span class="tab__descr">Precio de de tu alarma</span>
+        </div>
+    </div>
+
+    <div class="calculator__question calculator__question--first">
+        <p class="question-descr">¿Necesitar proteger un hogar o un negocio?</p>
+        <div class="question">
+            <input type="checkbox" id="checkHogar" name="checkHogar" class="checkbox-question-next"/>
+            <label for="checkHogar">Hogar</label>
+        </div>
+        <div class="question">
+            <input type="checkbox" id="checkNegocio" name="checkNegocio" class="checkbox-question-next"/>
+            <label for="checkNegocio">Negocio</label>
+        </div>
+    </div>
+
+    <div class="calculator__question calculator__question--hogar">
+        <form id="hogarForm">
+            <div class="question--horar" style="display: block">
+                <p class="question-descr">¿Que tipo de hogar?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkPiso" name="checkPiso" class="checkbox-question-next"/>
+                    <label for="checkPiso">Piso</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkChalet" name="checkChalet" class="checkbox-question-next"/>
+                    <label for="checkChalet">Chalet</label>
+                </div>
+            </div>
+
+            <div class="question--horar ">
+                <p class="question-descr">¿Donde esta la vivienda?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkEn" name="checkEn" class="checkbox-question-next"/>
+                    <label for="checkEn">En núcleo urbano</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkFuera" name="checkFuera" class="checkbox-question-next"/>
+                    <label for="checkFuera">Fuera de núcleo urbano</label>
+                </div>
+            </div>
+
+            <div class="question--horar">
+                <p class="question-descr">¿Es una vivienda habitual o suele estar vaciá?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkHabitual" name="checkHabitual" class="checkbox-question-next"/>
+                    <label for="checkHabitual">Habitual</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkVacia" name="checkVacia" class="checkbox-question-next"/>
+                    <label for="checkVacia">Vaciá</label>
+                </div>
+            </div>
+
+            <!----------------tab2--------------->
+
+            <div class="question--horar">
+                <p class="question-descr">¿Tienes alarma con otra empresa?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaSi" name="checkAlarmaSi" class="checkbox-question-next"/>
+                    <label for="checkAlarmaSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaNo" name="checkAlarmaNo" class="checkbox-question-next"/>
+                    <label for="checkAlarmaNo">No</label>
+                </div>
+            </div>
+
+            <div class="question--horar">
+                <p class="question-descr">¿Tienes rejas en la vivienda?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkRejasSi" name="checkRejasSi" class="checkbox-question-next"/>
+                    <label for="checkRejasSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkRejasNo" name="checkRejasNo" class="checkbox-question-next"/>
+                    <label for="checkRejasNo">No</label>
+                </div>
+            </div>
+
+            <div class="question--horar">
+                <p class="question-descr">¿Tienes internet en el domicilio?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkInternetSi" name="checkInternetSi" class="checkbox-question-next"/>
+                    <label for="checkInternetSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkInternetNo" name="checkInternetNo" class="checkbox-question-next"/>
+                    <label for="checkInternetNo">No</label>
+                </div>
+            </div>
+
+            <div class="question--horar">
+                <p class="question-descr">Código postal de tu vivienda?</p>
+                <div class="question__input-wrapper">
+                    <input type="text" id="questionInputVivienda" name="questionInputVivienda" class="question__input" >
+                    <div class="question__button" id="questionButtontVivienda">Continuar</div>
+                </div>
+            </div>
+            <div class="question--negocio">
+                <p class="question-descr">¿Han robabado alguna vez o cerca suya?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkRobabadoAlgunaSi" name="checkRobabadoAlgunaSi" class="checkbox-question-next"/>
+                    <label for="checkRobabadoAlgunaSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkRobabadoAlgunaNo" name="checkRobabadoAlgunaNo" class="checkbox-question-next"/>
+                    <label for="checkRobabadoAlgunaNo">No</label>
+                </div>
+            </div>
+            <!----------------tab3--------------->
+
+            <div class="question--horar tab3">
+                <div class="tab3__row">
+                    <div class="tab3__descr">Nombre <small>*</small></div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="tab3HorarNombre" name="tab3HorarNombre">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">Teléfono <small>*</small></div>
+                    <div class="tab3__input tab3__input--telefono">
+                        <input type="text" class="question__input" id="tab3HorarInputTel" name="tab3HorarInputTel">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">Email</div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="tab3HorarInputEmail" name="tab3HorarInputEmail">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">He leido y acepto la politica de privacidad<small>*</small></div>
+                    <div class="tab3__input">
+                        <input type="checkbox" id="checkTab3HorarAcepto" name="checkTab3HorarAcepto"/>
+                        <label for="checkTab3HorarAcepto">Acepto
+                            <a href="https://alarmas.plus/politica-de-privacidad" class="tab3__link">
+                                https://alarmas.plus/politica-de-privacidad
+                            </a>
+                        </label>
+                    </div>
+                </div>
+                <div class="tab3__row">
+                    <div class="calcula-button question__button" id="tab3HorarCalcula">Calcula tu precio ya</div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="calculator__question calculator__question--negocio">
+        <form id="negocioForm">
+            <div class="question--negocio" style="display: block">
+                <p class="question-descr">¿Cuantos empleados tiene habitualmente el negocio?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkSolo" name="checkSolo" class="checkbox-question-next"/>
+                    <label for="checkSolo">Solo estoy yo</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkEmpleados2" name="checkEmpleados2" class="checkbox-question-next"/>
+                    <label for="checkEmpleados2">De 2 a 4 empleados</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkEmpleados4" name="checkEmpleados4" class="checkbox-question-next"/>
+                    <label for="checkEmpleados4">Más de 4 empleados‎</label>
+                </div>
+            </div>
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Cuando esta abierto su negocio?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkPorLaManana" name="checkPorLaManana" class="checkbox-question-next"/>
+                    <label for="checkPorLaManana">Por la mañana</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkPorLaTarde" name="checkPorLaTarde" class="checkbox-question-next"/>
+                    <label for="checkPorLaTarde">Por la tarde</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkMañanaYTarde‎" name="checkMañanaYTarde‎" class="checkbox-question-next"/>
+                    <label for="checkMañanaYTarde‎">Mañana y tarde‎‎</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkPorlanoche‎" name="checkPorlanoche‎" class="checkbox-question-next"/>
+                    <label for="checkPorlanoche‎">Por la noche‎‎</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkLas24hHoras‎" name="checkLas24hHoras‎" class="checkbox-question-next"/>
+                    <label for="checkLas24hHoras‎">Las 24 horas‎‎</label>
+                </div>
+            </div>
+            <!-------------------tab2--------------------->
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Tiene alarma con otra empresa?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaSiNegocio" name="checkAlarmaSiNegocio" class="checkbox-question-next"/>
+                    <label for="checkAlarmaSiNegocio">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaNoNegocio" name="checkAlarmaNoNegocio" class="checkbox-question-next"/>
+                    <label for="checkAlarmaNoNegocio">No</label>
+                </div>
+            </div>
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Han robado con anterioridad en su negocio o a negocios cercanos?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkHanRobadoSi" name="checkHanRobadoSi" class="checkbox-question-next"/>
+                    <label for="checkHanRobadoSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkcheckHanRobadoNo" name="checkcheckHanRobadoNo" class="checkbox-question-next"/>
+                    <label for="checkcheckHanRobadoNo">No</label>
+                </div>
+            </div>
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Tiene internet en el negocio?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkInternetNegocioSi" name="checkInternetNegocioSi" class="checkbox-question-next"/>
+                    <label for="checkInternetNegocioSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkInternetNegocioNo" name="checkInternetNegocioNo" class="checkbox-question-next"/>
+                    <label for="checkInternetNegocioNo">No</label>
+                </div>
+            </div>
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Código postal de tu negocio?</p>
+                <div class="question__input-wrapper">
+                    <input type="text" class="question__input" id="postalNegocioInput" name="postalNegocioInput">
+                    <div class="question__button" id="postalNegocioButton">Continuar</div>
+                </div>
+            </div>
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Tiene rejas u otra medida de seguridad en el local?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkTieneNegocioSi" name="checkTieneNegocioSi" class="checkbox-question-next"/>
+                    <label for="checkTieneNegocioSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkTieneNegocioNo" name="checkTieneNegocioNo" class="checkbox-question-next"/>
+                    <label for="checkTieneNegocioNo">No</label>
+                </div>
+            </div>
+
+            <!----------------tab3--------------->
+
+            <div class="question--negocio tab3">
+                <div class="tab3__row">
+                    <div class="tab3__descr">Nombre <small>*</small></div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="tab3NegacioNombre" name="tab3NegacioNombre">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">Teléfono <small>*</small></div>
+                    <div class="tab3__input tab3__input--telefono">
+                        <input type="text" class="question__input" id="tab3NegacioTel" name="tab3NegacioTel">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">Email</div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="tab3NegacioEmail" name="tab3NegacioEmail">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="tab3__descr">He leido y acepto la politica de privacidad<small>*</small></div>
+                    <div class="tab3__input">
+                        <input type="checkbox" id="checkTab3AceptoNegocio" name="checkTab3AceptoNegocio"/>
+                        <label for="checkTab3AceptoNegocio">Acepto
+                            <a href="https://alarmas.plus/politica-de-privacidad" class="tab3__link">
+                                https://alarmas.plus/politica-de-privacidad
+                            </a>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="tab3__row">
+                    <div class="calcula-button question__button" id="tab3NegocioCalcula">Calcula tu precio ya</div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+
+
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function(a){var o=a(".calculator__question #checkHogar"),c=a(".calculator__question #checkNegocio"),e=a(".calculator__question--hogar"),t=a(".calculator__question--negocio"),r=a(".calculator__question--first"),l=a(".calculator__question--hogar input[type=checkbox].checkbox-question-next, .calculator__question--negocio input[type=checkbox].checkbox-question-next"),n=(a("#questionButtontVivienda, #postalNegocioButton"),a("#questionInputVivienda, #postalNegocioInput"),a(".calculator__tab--first")),i=a(".calculator__tab--second"),u=a(".calculator__tab--third"),s=a("#checkHabitual, #checkVacia, #checkHabituaNegocio, #checkVaciaNegocio, #checkPorLaManana, #checkPorLaTarde, #checkMañanaYTarde‎, #checkPorlanoche‎, #checkLas24hHoras‎"),b=a("#checkTieneNegocioSi, #checkTieneNegocioNo"),d=a("#checkRobabadoAlgunaSi, #checkRobabadoAlgunaNo"),_=a("#tab3HorarCalcula"),f=a("#tab3NegocioCalcula");function p(o){var c=a("#"+o+"Form").serialize(),e={action:"alarm_email_results",nonce_code:alarm_poll_form_ajax_obj.nonce,data:c};f.text("Solicitud de envío ..."),_.text("Solicitud de envío ..."),jQuery.post(alarm_poll_form_ajax_obj.ajax_url,e,function(a){_.text("Solicitud enviada"),f.text("Solicitud enviada"),document.location.href="https://alarmas.plus/respuesta-calcula/",setTimeout(function(){_.text("Calcula tu presupuesto ya"),f.text("Calcula tu presupuesto ya")},3500)})}function v(a){return/^[0-9]{5}(?:-[0-9]{4})?$/.test(a)}function k(a){return/^\+?[0-9]{9}$/.test(a)}function m(a){return/^[0-9a-zA-Z\-\s]{1,25}$/.test(a)}function g(a){return""===a||/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(a)}o.on("click",function(){n.addClass("calculator__tab--active"),setTimeout(function(){r.fadeOut("slow",function(){e.fadeIn()})},300)}),c.on("click",function(){n.addClass("calculator__tab--active"),setTimeout(function(){r.fadeOut("slow",function(){t.fadeIn()})},300)}),l.on("click",function(){var o=this;setTimeout(function(){a(o).parent().parent().fadeOut("slow",function(){a(o).parent().parent().next().fadeIn()})},300)}),jQuery("#questionButtontVivienda").on("click",function(){var o=jQuery("#questionInputVivienda");if(v(o.val())){var c=this;setTimeout(function(){a(c).parent().parent().fadeOut("slow",function(){a(c).parent().parent().next().fadeIn()})},300)}else o.css("border-color","red"),o.focus()}),jQuery("#postalNegocioButton").on("click",function(){var o=jQuery("#postalNegocioInput");if(v(o.val())){var c=this;setTimeout(function(){a(c).parent().parent().fadeOut("slow",function(){a(c).parent().parent().next().fadeIn()})},300)}else o.css("border-color","red"),o.focus()}),s.on("click",function(){n.removeClass("calculator__tab--active"),n.addClass("calculator__tab--done"),i.addClass("calculator__tab--active")}),b.on("click",function(){i.removeClass("calculator__tab--active"),i.addClass("calculator__tab--done"),u.addClass("calculator__tab--active")}),d.on("click",function(){i.removeClass("calculator__tab--active"),i.addClass("calculator__tab--done"),u.addClass("calculator__tab--active")}),_.on("click",function(){var o=a("#tab3HorarNombre").val(),c=a("#tab3HorarInputTel").val(),e=a("#tab3HorarInputEmail").val(),t=a("#checkTab3HorarAcepto");m(o)?k(c)?g(e)?t.is(":checked")?(p("hogar"),t.siblings("label").removeClass("invalid")):(t.siblings("label").addClass("invalid"),a("#tab3HorarInputEmail").css("border-color","black")):(a("#tab3HorarInputTel").css("border-color","black"),a("#tab3HorarInputEmail").css("border-color","red"),a("#tab3HorarInputEmail").focus()):(a("#tab3HorarNombre").css("border-color","black"),a("#tab3HorarInputTel").css("border-color","red"),a("#tab3HorarInputTel").focus()):(a("#tab3HorarNombre").css("border-color","red"),a("#tab3HorarNombre").focus())}),f.on("click",function(){var o=a("#tab3NegacioNombre").val(),c=a("#tab3NegacioTel").val(),e=a("#tab3NegacioEmail").val(),t=a("#checkTab3AceptoNegocio");m(o)?k(c)?g(e)?t.is(":checked")?(p("negocio"),t.siblings("label").removeClass("invalid")):(t.siblings("label").addClass("invalid"),a("#tab3NegacioEmail").css("border-color","black")):(a("#tab3NegacioTel").css("border-color","black"),a("#tab3NegacioEmail").css("border-color","red"),a("#tab3NegacioEmail").focus()):(a("#tab3NegacioNombre").css("border-color","black"),a("#tab3NegacioTel").css("border-color","red"),a("#tab3NegacioTel").focus()):(a("#tab3NegacioNombre").css("border-color","red"),a("#tab3NegacioNombre").focus())})});
+</script>

@@ -67,8 +67,8 @@ class Alarm_Estimate_Form {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'PLUGIN_NAME_VERSION' ) ) {
-			$this->version = PLUGIN_NAME_VERSION;
+		if ( defined( 'ALARM_ESTIMATE_FORM_VERSION' ) ) {
+			$this->version = ALARM_ESTIMATE_FORM_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
@@ -157,6 +157,12 @@ class Alarm_Estimate_Form {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		// Add setting menu item 
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_alarm_estimate_form_setting' );
+
+		// Saves and update settings
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'alarm_estimate_form_admin_settings_save' );
+
 	}
 
 	/**
@@ -172,6 +178,8 @@ class Alarm_Estimate_Form {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+		$this->loader->add_shortcode( 'alarm_estimate_form', $plugin_public, 'shortcode_alarm_estimate_form' );
 
 	}
 

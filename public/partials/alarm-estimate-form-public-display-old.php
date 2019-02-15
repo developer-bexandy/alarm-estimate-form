@@ -20,17 +20,17 @@
     <div class="calculator__tabs-wrapper ">
         <div class="calculator__tab calculator__tab--active calculator__tab--first calculator__tab--triangle">
             <span class="tab__circle">1</span>
-            <span class="tab__descr">Datos de la Vivienda</span>
+            <span class="tab__descr">¿Que necesitas?</span>
         </div>
 
         <div class="calculator__tab calculator__tab--second calculator__tab--triangle">
             <span class="tab__circle">2</span>
-            <span class="tab__descr">Tipo de Vivienda</span>
+            <span class="tab__descr">Seguridad actual</span>
         </div>
 
         <div class="calculator__tab calculator__tab--third calculator__tab--last">
             <span class="tab__circle">3</span>
-            <span class="tab__descr">Datos Personales</span>
+            <span class="tab__descr">Precio de de tu alarma</span>
         </div>
     </div>
 
@@ -48,8 +48,31 @@
 
     <div class="calculator__question calculator__question--hogar">
             <form id="hogarForm">
-
             <div class="question--horar" style="display: block">
+                <p class="question-descr">¿Que tipo de hogar?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkPiso" name="checkPiso" class="checkbox-question-next"/>
+                    <label for="checkPiso">Piso</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkChalet" name="checkChalet" class="checkbox-question-next"/>
+                    <label for="checkChalet">Chalet</label>
+                </div>
+            </div>
+
+            <div class="question--horar ">
+                <p class="question-descr">¿Donde esta la vivienda?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkEn" name="checkEn" class="checkbox-question-next"/>
+                    <label for="checkEn">En núcleo urbano</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkFuera" name="checkFuera" class="checkbox-question-next"/>
+                    <label for="checkFuera">Fuera de núcleo urbano</label>
+                </div>
+            </div>
+
+            <div class="question--horar">
                 <p class="question-descr">¿Es una vivienda habitual o suele estar vaciá?</p>
                 <div class="question">
                     <input type="checkbox" id="checkHabitual" name="checkHabitual" class="checkbox-question-next"/>
@@ -60,7 +83,21 @@
                     <label for="checkVacia">Vaciá</label>
                 </div>
             </div>
-            
+
+            <!----------------tab2--------------->
+
+            <div class="question--horar">
+                <p class="question-descr">¿Tienes alarma con otra empresa?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaSi" name="checkAlarmaSi" class="checkbox-question-next"/>
+                    <label for="checkAlarmaSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaNo" name="checkAlarmaNo" class="checkbox-question-next"/>
+                    <label for="checkAlarmaNo">No</label>
+                </div>
+            </div>
+
             <div class="question--horar">
                 <p class="question-descr">¿tienes rejas en la vivienda?</p>
                 <div class="question">
@@ -85,58 +122,6 @@
                 </div>
             </div>
 
-            <div class="question--negocio">
-                <p class="question-descr">¿Han robado alguna vez o cerca suya?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkRobabadoAlgunaSi" name="checkRobabadoAlgunaSi" class="checkbox-question-next"/>
-                    <label for="checkRobabadoAlgunaSi">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkRobabadoAlgunaNo" name="checkRobabadoAlgunaNo" class="checkbox-question-next"/>
-                    <label for="checkRobabadoAlgunaNo">No</label>
-                </div>
-            </div>
-
-            <div class="question--horar">
-                <p class="question-descr">¿Tienes alarma con otra empresa?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkAlarmaSi" name="checkAlarmaSi" class="checkbox-question-next"/>
-                    <label for="checkAlarmaSi">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkAlarmaNo" name="checkAlarmaNo" class="checkbox-question-next"/>
-                    <label for="checkAlarmaNo">No</label>
-                </div>
-            </div>
-
-            <!----------------tab2--------------->
-
-            <div class="question--horar">
-                <p class="question-descr">¿Que tipo de hogar?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkPiso" name="checkPiso" />
-                    <label for="checkPiso">Piso</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkChalet" name="checkChalet" class="checkbox-question-next" />
-                    <label for="checkChalet">Casa</label>
-                </div>
-            </div>
-
-            <div class="question--horar">
-                <p class="question-descr">¿Su casa mide más de 180 mts cuadrados?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkMas180" name="checkMas180" class="checkbox-question-next"/>
-                    <label for="checkMas180">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkMenos180" name="checkMenos180" class="checkbox-question-next"/>
-                    <label for="checkMenos180">No</label>
-                </div>
-            </div>
-
-            <!----------------tab3--------------->            
-
             <div class="question--horar">
                 <p class="question-descr">Código postal de tu vivienda</p>
                 <div class="question__input-wrapper">
@@ -144,8 +129,18 @@
                     <div class="question__button" id="questionButtontVivienda">Continuar</div>
                 </div>
             </div>
-                
-            
+                <div class="question--negocio">
+                    <p class="question-descr">¿Han robabado alguna vez o cerca suya?</p>
+                    <div class="question">
+                        <input type="checkbox" id="checkRobabadoAlgunaSi" name="checkRobabadoAlgunaSi" class="checkbox-question-next"/>
+                        <label for="checkRobabadoAlgunaSi">Si</label>
+                    </div>
+                    <div class="question">
+                        <input type="checkbox" id="checkRobabadoAlgunaNo" name="checkRobabadoAlgunaNo" class="checkbox-question-next"/>
+                        <label for="checkRobabadoAlgunaNo">No</label>
+                    </div>
+                </div>
+            <!----------------tab3--------------->
 
             <div class="question--horar tab3">
                 <div class="tab3__row">
@@ -229,6 +224,19 @@
                     <label for="checkLas24hHoras‎">Las 24 horas‎‎</label>
                 </div>
             </div>
+                <!-------------------tab2--------------------->
+
+            <div class="question--negocio">
+                <p class="question-descr">¿Tienes alarma con otra empresa?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaSiNegocio" name="checkAlarmaSiNegocio" class="checkbox-question-next"/>
+                    <label for="checkAlarmaSiNegocio">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkAlarmaNoNegocio" name="checkAlarmaNoNegocio" class="checkbox-question-next"/>
+                    <label for="checkAlarmaNoNegocio">No</label>
+                </div>
+            </div>
 
             <div class="question--negocio">
                 <p class="question-descr">¿Han robado con anterioridad en su negocio o a negocios cercanos?</p>
@@ -253,68 +261,7 @@
                     <label for="checkInternetNegocioNo">No</label>
                 </div>
             </div>
-                
 
-            <div class="question--negocio">
-                <p class="question-descr">¿Tienes alarma con otra empresa?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkAlarmaSiNegocio" name="checkAlarmaSiNegocio" class="checkbox-question-next"/>
-                    <label for="checkAlarmaSiNegocio">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkAlarmaNoNegocio" name="checkAlarmaNoNegocio" class="checkbox-question-next"/>
-                    <label for="checkAlarmaNoNegocio">No</label>
-                </div>
-            </div>
-
-            
-            <!-------------------tab2--------------------->
-            
-            <div class="question--negocio">
-                <p class="question-descr">¿El propietario del negocio es una empresa o un autonomo?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioEmpresa" name="checkNegocioEmpresa" class="checkbox-question-next"/>
-                    <label for="checkNegocioEmpresa">Empresa</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioAutonomo" name="checkNegocioAutonomo" class="checkbox-question-next"/>
-                    <label for="checkNegocioAutonomo">Autónomo</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">Seleccione el tipo de negocio</p>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioEmpresa" name="checkNegocioEmpresa" class="checkbox-question-next"/>
-                    <select id="selectTipoNegocio" name="selectTipoNegocio" class="form-control checkbox-question-next">
-                        <option value="salud">Salud</option>
-                        <option value="hosteleria">Hosteleria</option>
-                        <option value="peluqueria">Peluquería</option>                        
-                        <option value="informatica">Tienda Informática</option>
-                        <option value="gimnasio">Gimnasio</option>
-                        <option value="colegio">Colegio</option>
-                        <option value="bazar">Bazar</option>
-                        <option value="alimentacion">Alimentación</option>
-                        <option value="otros" selected="selected">Resto de Negocios</option>
-                    </select>
-                    <label for="selectTipoNegocio">Oferta válida para negocios de grado 2 de seguridad. No válido para negocios grado 3 joyerías, armerías, compro oro, etc</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">¿Es una nave de más de 1500 metros cuadrados? </p>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioMas1500" name="checkNegocioMas1500" class="checkbox-question-next"/>
-                    <label for="checkNegocioMas1500">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioMenos1500" name="checkNegocioMenos1500" class="checkbox-question-next"/>
-                    <label for="checkNegocioMenos1500">No</label>
-                </div>
-            </div>
-
-            
-            <!----------------tab3--------------->
             <div class="question--negocio">
                 <p class="question-descr">¿Código postal de tu negocio?</p>
                 <div class="question__input-wrapper">
@@ -335,7 +282,7 @@
                 </div>
             </div>
 
-            
+            <!----------------tab3--------------->
 
             <div class="question--negocio tab3">
                 <div class="tab3__row">

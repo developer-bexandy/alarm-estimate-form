@@ -100,4 +100,22 @@ class Alarm_Estimate_Form_Public {
 
 	}
 
+	/**
+	 * Definir el shortcode para mostrar el formulario.
+	 *
+	 **/
+	public function shortcode_alarm_estimate_form($atts, $content = null){
+
+	    include_once( 'partials/alarm-estimate-form-public-display.php' );
+	}
+
+	/**
+	 * Registrar el shortcode para mostrar el formulario.
+	 *
+	 **/
+	public function register_shortcode_alarm_estimate_form(){
+
+	    add_shortcode( 'alarm_estimate_form',  'shortcode_alarm_estimate_form' );
+	}
+
 }

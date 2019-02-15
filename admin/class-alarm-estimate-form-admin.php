@@ -100,4 +100,110 @@ class Alarm_Estimate_Form_Admin {
 
 	}
 
+	/**
+	 * Registrar el menú de administración del plugin dentro del Dashboard de Wordpress
+	 *
+	 * @since    1.0.0
+	 **/
+	
+	public function add_alarm_estimate_form_setting() {
+
+		/**
+		 * Añadir la página de configuración del plugin en el menú "Ajustes".
+		 *
+		 * Administration Menus: http://codex.wordpress.org/Administration_Menus
+		 *
+		 **/
+		add_options_page( 'ALARM ESTIMATE FORM PAGE', 'ALARM ESTIMATE FORM SMS', 'manage_options', $this->plugin_name, array($this, 'display_alarm_estimate_form_settings_page') );
+	}
+
+	/**
+	 * Renderizar la página de configuración del plugin (El archivo html)
+	 *
+	 * @since    1.0.0
+	 * 
+	 **/
+	public function display_alarm_estimate_form_settings_page() {
+
+		include_once( 'partials/alarm-estimate-form-admin-display.php' );
+	}
+
+	/**
+	 * Registrar y definir los campos necesarios para la configuración.
+	 *
+	 **/
+	public function alarm_estimate_form_admin_settings_save() {
+
+		register_setting( $this->plugin_name, $this->plugin_name, array($this, 'plugin_options_validate') );
+
+		add_settings_section('alarm_estimate_form_sendex', 'Configuración para envío de SMS - Whatsapp', array($this, 'alarm_estimate_form_sendex_section_text'), 'alarm-estimate-form-settings-page');
+
+		add_settings_section('alarm_estimate_form_verifysms', 'Configuración para Verificación de Teléfono por SMS', array($this, 'alarm_estimate_form_verifysms_section_text'), 'alarm-estimate-form-settings-page');
+
+
+		add_settings_field('api_sid', 'API SID', array($this, 'sendex_setting_sid'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_sendex');
+
+		add_settings_field('api_auth_token', 'API AUTH TOKEN', array($this, 'sendex_setting_token'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_sendex');
+
+		
+
+		add_settings_field('prod_api_key', 'PRODUCTION API KEY', array($this, 'alarm_estimate_form_setting_key'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_verifysms');
+
+	}
+
+	
+	/**
+	 * Mostrar el subtitulo en la configuración
+	 *
+	 **/
+	public function alarm_estimate_form_sendex_section_text() {
+		echo '<h3>Editar detalles de la API de Twilio</h3>';
+	}
+
+	/**
+	 * Renderizar el campo sid
+	 *
+	 **/
+	public function sendex_setting_sid() {
+		$options = get_option($this->plugin_name);
+		echo "<input id='plugin_text_string' name='$this->plugin_name[api_sid]' size='40' type='text' value='{$options['api_sid']}' />";
+	}
+
+	/**
+	 * Renderizar el campo auth_token
+	 *
+	 **/
+	public function sendex_setting_token() {
+		$options = get_option($this->plugin_name);
+		echo "<input id='plugin_text_string' name='$this->plugin_name[api_auth_token]' size='40' type='text' value='{$options['api_auth_token']}' />";
+	}
+
+	/**
+	 * Mostrar el subtitulo en la configuración
+	 *
+	 **/
+	public function alarm_estimate_form_verifysms_section_text() {
+		echo '<h3>Editar detalles de la API de Verificación de Twilio</h3>';
+	}
+
+	/**
+	 * Renderizar el campo prod_api_key
+	 *
+	 **/
+	public function alarm_estimate_form_setting_key() {
+		$options = get_option($this->plugin_name);
+		echo "<input id='plugin_text_string' name='$this->plugin_name[prod_api_key]' size='40' type='text' value='{$options['prod_api_key']}' />";
+	}
+
+	/**
+	 * Sanitizar todos los campos de entrada.
+	 *
+	 **/
+	public function plugin_options_validate($input) {
+		$newinput['api_sid'] = trim($input['api_sid']);
+		$newinput['api_auth_token'] = trim($input['api_auth_token']);
+		$newinput['prod_api_key'] = trim($input['prod_api_key']);
+
+		return $newinput;
+	}
 }
