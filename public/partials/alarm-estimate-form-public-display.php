@@ -140,10 +140,14 @@
                 <p class="question-descr">Número Telefónico Movil</p>
                 <div class="question__input-wrapper">
                     <input type="hidden" id="country_code" name="country_code" value="+34" />
+                    <div id="verify-country-code" class="input-group-addon">+34</div>
                     <input type="text" id="phone_number" name="phone_number"  placeholder="+2348059794251" required class="question__input"/>
                     <input type="hidden" id="via" name="via" value="sms" />
                     <div class="question__button" id="request_verification">Verificar</div>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda"><?php esc_attr_e( 'Nos pondremos en contacto con usted en el número de arriba con un código de verificación', 'alarm-estimate-form' ) ?></span>
+                </div>                
             </div>      
 
             <div class="question--horar">

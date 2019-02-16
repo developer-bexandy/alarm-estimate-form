@@ -179,7 +179,12 @@ class Alarm_Estimate_Form {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		// Crear shortcode del formulario de presupuesto
 		$this->loader->add_shortcode( 'alarm_estimate_form', $plugin_public, 'shortcode_alarm_estimate_form' );
+
+		// Añadir funciones listener para llamado ajax con action = 'request_phone_verification'
+		$this->loader->add_action( 'wp_ajax_request_phone_verification', $plugin_public, 'alarm_estimate_form_request_verification' );
+		$this->loader->add_action( 'wp_ajax_nopriv_request_phone_verification', $plugin_public, 'alarm_estimate_form_request_verification' );
 
 	}
 

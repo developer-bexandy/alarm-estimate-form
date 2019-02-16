@@ -167,21 +167,32 @@
         }
 
         requestVerification.on('click', function () {
-            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code').val(),
+                'phone_number': $('#phone_number').val(),
+                'via': $('#via').val(),
+                'request_verification' : true
+            };
             var data = {
-                action: 'alarm_email_results',
+                action: 'request_phone_verification',
                 nonce_code: alarm_estimate_form_ajax_obj.nonce,
                 data: data_object
             };
-            $.post( alarm_estimate_form_ajax_obj.ajax_url, data, function(response) {
-               CalculaHogar.text('Solicitud enviada');
-               CalculaNegocio.text('Solicitud enviada');
-               setTimeout(function(){
-                   CalculaHogar.text('Calcula tu precio ya');
-                   CalculaNegocio.text('Calcula tu precio ya');
-               },3500);
+            $.post( 
+                alarm_estimate_form_ajax_obj.ajax_url, 
+                data, 
+                function(response) {
+                    if (response.success) {
+                        alert( 'Success: '+response.data.message );
+                    } else {
+                        alert( 'Error: '+response.data.message );
+                    }
+                    
+                })
+                .fail(function(response) {
+                alert( "error" );
+              });
 
-            });
         });
 
         CalculaHogar.on('click', function () {

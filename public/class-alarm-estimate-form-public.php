@@ -97,6 +97,11 @@ class Alarm_Estimate_Form_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/alarm-estimate-form-public.js', array( 'jquery' ), $this->version, false );
+		$title_nonce = wp_create_nonce('alarm_estimate_form');
+	    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
+	        'ajax_url' => admin_url( 'admin-ajax.php' ),
+	        'nonce'    => $title_nonce,
+	    ));
 
 	}
 
@@ -126,11 +131,12 @@ class Alarm_Estimate_Form_Public {
 	 * @var $message - String - The message we are displaying
 	 * @var $status   - Boolean - its either true or false
 	 **/
-	public function admin_notice($message, $status = true) {
+	public function return_success($message, $status = true) {
 		$class =  ($status) ? 'notice notice-success' : 'notice notice-error';
 		$message = __( $message, 'sample-text-domain' );
+		$response = sprintf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+		return $response;
 	}
 
 	/**
@@ -140,9 +146,11 @@ class Alarm_Estimate_Form_Public {
 	 * @access   private
 	 **/
 	public function DisplayError($message = "Aww!, there was an error.") {
-		add_action( 'admin_notices', function() use($message) {
-			self::admin_notice($message, false);
-		} );
+		wp_send_json_error(
+		    array( 
+            		'message' => $message
+            	)
+		  );
 	}
 
 	/**
@@ -152,9 +160,11 @@ class Alarm_Estimate_Form_Public {
 	 * @since    1.0.0
 	 **/
 	public function DisplaySuccess($message = "Request Verification Sended !!") { 
-		add_action( 'admin_notices', function() use($message) {
-			self::admin_notice($message, true);
-		} );
+		wp_send_json_success(
+			    array( 
+            		'message' => $message
+            	)
+			 );
 	}
 
 	/**
@@ -162,14 +172,15 @@ class Alarm_Estimate_Form_Public {
 	 *
 	 **/
 	public function alarm_estimate_form_request_verification() {
-		if( !isset($_POST['request_verification']) ){ return; }
+		if( ! wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form' ) ) die( 'Stop!');
+		if( !isset($_POST['data']['request_verification']) ){ return; }
 
-		$country_code = (isset($_POST['country_code']) ) ? $_POST['country_code'] : '';
-		$phone_number = (isset($_POST['phone_number']) )  ? $_POST['phone_number']  : '';
-		$via = (isset($_POST['via']) ) ? $_POST['via'] : '';
+		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
+		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
+		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
 
 		//gets our api details from the database.
-		$api_details = get_option('verifysms'); #verifysms is what we use to identify our option, it can be anything
+		$api_details = get_option('alarm-estimate-form'); #alarm-estimate-form is what we use to identify our option, it can be anything
 
 		if(is_array($api_details) AND count($api_details) != 0) {
 			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
@@ -184,7 +195,7 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }			
-            */
+            */            
             self::DisplaySuccess("Mensaje Enviado");
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
@@ -224,18 +235,6 @@ class Alarm_Estimate_Form_Public {
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
-	}
-
-	/**
-	 * Manejo de Ajax WP
-	 *
-	 **/
-	function alarm_estimate_form_ajax_data(){
-	    $title_nonce = wp_create_nonce('alarm_estimate_form');
-	    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
-	        'ajax_url' => admin_url( 'admin-ajax.php' ),
-	        'nonce'    => $title_nonce,
-	    ));
 	}
 
 }
