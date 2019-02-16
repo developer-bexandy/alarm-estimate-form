@@ -118,4 +118,124 @@ class Alarm_Estimate_Form_Public {
 	    add_shortcode( 'alarm_estimate_form',  'shortcode_alarm_estimate_form' );
 	}
 
+	/**
+	 * Designs for displaying Notices
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var $message - String - The message we are displaying
+	 * @var $status   - Boolean - its either true or false
+	 **/
+	public function admin_notice($message, $status = true) {
+		$class =  ($status) ? 'notice notice-success' : 'notice notice-error';
+		$message = __( $message, 'sample-text-domain' );
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+	}
+
+	/**
+	 * Displays Error Notices
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 **/
+	public function DisplayError($message = "Aww!, there was an error.") {
+		add_action( 'admin_notices', function() use($message) {
+			self::admin_notice($message, false);
+		} );
+	}
+
+	/**
+	 * Displays Success Notices
+	 *
+	 * @since    1.0.0
+	 * @since    1.0.0
+	 **/
+	public function DisplaySuccess($message = "Request Verification Sended !!") { 
+		add_action( 'admin_notices', function() use($message) {
+			self::admin_notice($message, true);
+		} );
+	}
+
+	/**
+	 * Enviar la solicitud de verificacion al numero telefonico
+	 *
+	 **/
+	public function alarm_estimate_form_request_verification() {
+		if( !isset($_POST['request_verification']) ){ return; }
+
+		$country_code = (isset($_POST['country_code']) ) ? $_POST['country_code'] : '';
+		$phone_number = (isset($_POST['phone_number']) )  ? $_POST['phone_number']  : '';
+		$via = (isset($_POST['via']) ) ? $_POST['via'] : '';
+
+		//gets our api details from the database.
+		$api_details = get_option('verifysms'); #verifysms is what we use to identify our option, it can be anything
+
+		if(is_array($api_details) AND count($api_details) != 0) {
+			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
+		}
+
+		try {
+			/*
+			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
+			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
+			if ($response->ok()) {
+                self::DisplaySuccess($response->message());
+            } else {
+                self::DisplayError($response->errors()->message);
+            }			
+            */
+            self::DisplaySuccess("Mensaje Enviado");
+		} catch (Exception $e) {
+			self::DisplayError( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Verificar el token recibido por SMS si es valido
+	 *
+	 **/
+	public function alarm_estimate_form_verify_token() {
+		if( !isset($_POST['verify_token']) ){ return; }
+
+		$country_code = (isset($_POST['country_code']) ) ? $_POST['country_code'] : '';
+		$phone_number = (isset($_POST['phone_number']) )  ? $_POST['phone_number']  : '';
+		$via = (isset($_POST['via']) ) ? $_POST['via'] : '';
+		$country_code = (isset($_POST['token']) ) ? $_POST['token'] : '';
+
+		//gets our api details from the database.
+		$api_details = get_option('verifysms'); #verifysms is what we use to identify our option, it can be anything
+
+		if(is_array($api_details) AND count($api_details) != 0) {
+			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
+		}
+
+		try {
+			/*
+			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
+			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
+			if ($response->ok()) {
+                self::DisplaySuccess($response->message());
+            } else {
+                self::DisplayError($response->errors()->message);
+            }	
+            */	
+            self::DisplayError("token verificado");	
+		} catch (Exception $e) {
+			self::DisplayError( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Manejo de Ajax WP
+	 *
+	 **/
+	function alarm_estimate_form_ajax_data(){
+	    $title_nonce = wp_create_nonce('alarm_estimate_form');
+	    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
+	        'ajax_url' => admin_url( 'admin-ajax.php' ),
+	        'nonce'    => $title_nonce,
+	    ));
+	}
+
 }

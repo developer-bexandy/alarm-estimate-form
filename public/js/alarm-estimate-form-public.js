@@ -38,6 +38,7 @@
         var allQuestionsCheckboxes = $('.calculator__question--hogar input[type=checkbox].checkbox-question-next, .calculator__question--negocio input[type=checkbox].checkbox-question-next');
         var questionButtonVivienda = $('#questionButtontVivienda, #postalNegocioButton');
         var questionInputVivienda = $('#questionInputVivienda, #postalNegocioInput');
+        var requestVerification = $('#request_verification');
         var tab1 = $('.calculator__tab--first');
         var tab2 = $('.calculator__tab--second');
         var tab3 = $('.calculator__tab--third');
@@ -147,13 +148,13 @@
 
             var data = {
                 action: 'alarm_email_results',
-                nonce_code: alarm_poll_form_ajax_obj.nonce,
+                nonce_code: alarm_estimate_form_ajax_obj.nonce,
                 data: data_object
             };
 
             CalculaNegocio.text('Solicitud de envío ...');
             CalculaHogar.text('Solicitud de envío ...');
-            $.post( alarm_poll_form_ajax_obj.ajax_url, data, function(response) {
+            $.post( alarm_estimate_form_ajax_obj.ajax_url, data, function(response) {
                CalculaHogar.text('Solicitud enviada');
                CalculaNegocio.text('Solicitud enviada');
               //  document.location.href = 'https://alarmas.plus/respuesta-calcula/';
@@ -164,6 +165,24 @@
 
             });
         }
+
+        requestVerification.on('click', function () {
+            var self = this;
+            var data = {
+                action: 'alarm_email_results',
+                nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                data: data_object
+            };
+            $.post( alarm_estimate_form_ajax_obj.ajax_url, data, function(response) {
+               CalculaHogar.text('Solicitud enviada');
+               CalculaNegocio.text('Solicitud enviada');
+               setTimeout(function(){
+                   CalculaHogar.text('Calcula tu precio ya');
+                   CalculaNegocio.text('Calcula tu precio ya');
+               },3500);
+
+            });
+        });
 
         CalculaHogar.on('click', function () {
             var nombre = $('#tab3HorarNombre').val(),

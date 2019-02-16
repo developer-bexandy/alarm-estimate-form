@@ -49,7 +49,7 @@
     <div class="calculator__question calculator__question--hogar">
             <form id="hogarForm">
 
-            <div class="question--horar" style="display: block">
+            <div class="question--horar" >
                 <p class="question-descr">¿Es una vivienda habitual o suele estar vaciá?</p>
                 <div class="question">
                     <input type="checkbox" id="checkHabitual" name="checkHabitual" class="checkbox-question-next"/>
@@ -135,7 +135,16 @@
                 </div>
             </div>
 
-            <!----------------tab3--------------->            
+            <!----------------tab3--------------->      
+            <div class="question--horar" style="display: block">
+                <p class="question-descr">Número Telefónico Movil</p>
+                <div class="question__input-wrapper">
+                    <input type="hidden" id="country_code" name="country_code" value="+34" />
+                    <input type="text" id="phone_number" name="phone_number"  placeholder="+2348059794251" required class="question__input"/>
+                    <input type="hidden" id="via" name="via" value="sms" />
+                    <div class="question__button" id="request_verification">Verificar</div>
+                </div>
+            </div>      
 
             <div class="question--horar">
                 <p class="question-descr">Código postal de tu vivienda</p>
