@@ -151,6 +151,31 @@
             </div>      
 
             <div class="question--horar">
+                <p class="question-descr" id="desc_verify_token">Por favor, escriba el código de verificación enviado a</p>
+                <div class="question__input-wrapper">
+
+                    <input type="text" id="verification_code" placeholder="Código de Verificación" class="question__input" value="" />
+                    <div class="question__button" id="verify_token">Enviar</div>
+                </div>
+                
+                <div class="phone-verification-code-links">
+                    <p class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
+
+                    <div class="dont_receive_code">
+                        <p>No ha recibido un código?</p>
+                        <ul id="verification-resend-code" class="list-unstyled">
+                            <li id="resend_counter" class="resend_counter">Reenviar código (15)</li>
+                            <li><a id="verification-resend-link" class="verification-resend-link oculto">Reenviar Código</a></li>
+                            <li><a id="verification-change-link" class="verification-change-link oculto">Cambiar número telefónico</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+
+            <div class="question--horar">
                 <p class="question-descr">Código postal de tu vivienda</p>
                 <div class="question__input-wrapper">
                     <input type="text" id="questionInputVivienda" name="questionInputVivienda" class="question__input" >

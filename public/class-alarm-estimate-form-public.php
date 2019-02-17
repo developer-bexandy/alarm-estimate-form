@@ -159,10 +159,13 @@ class Alarm_Estimate_Form_Public {
 	 * @since    1.0.0
 	 * @since    1.0.0
 	 **/
-	public function DisplaySuccess($message = "Request Verification Sended !!") { 
+	public function DisplaySuccess($message, $country_code, $phone_number, $via ) { 
 		wp_send_json_success(
 			    array( 
-            		'message' => $message
+            		'message' => $message,
+            		'country_code' => $country_code,
+            		'phone_number' => $phone_number,
+            		'via' => $via
             	)
 			 );
 	}
@@ -196,7 +199,7 @@ class Alarm_Estimate_Form_Public {
                 self::DisplayError($response->errors()->message);
             }			
             */            
-            self::DisplaySuccess("Mensaje Enviado");
+            self::DisplaySuccess("Mensaje Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}

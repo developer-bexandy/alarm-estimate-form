@@ -16,6 +16,58 @@
     border-radius: 10px;
 }
 
+.phone-verification-code-links {
+    margin-top: 15px;
+}
+
+.oculto {
+    display: none;
+}
+
+.phone-verification-code-links a {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #666;
+    line-height: 24px;
+    font-family: Whitney SSm A,Whitney SSm B,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+
+.resend_counter {
+    color: #666;
+    line-height: 24px;
+    font-family: Whitney SSm A,Whitney SSm B,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+
+.phone-verification-code-links a {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #666;
+    line-height: 24px;
+    font-family: Whitney SSm A,Whitney SSm B,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+
+p.change_via a {
+    color: #c0392b;
+    font-size: 16px;
+}
+
+.dont_receive_code p {
+    margin-bottom: 0px;
+}
+
+.list-unstyled {
+    margin-left: 0px !important;
+    margin-top: 0px !important;
+}
+
+.list-unstyled li {
+    padding-left: 0;
+    list-style: none !important;
+}
+
 .center_text {
     text-align: center;
 }
