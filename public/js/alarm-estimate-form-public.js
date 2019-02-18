@@ -202,6 +202,7 @@
                     nonce_code: alarm_estimate_form_ajax_obj.nonce,
                     data: data_object
                 };
+                alertSuccess('Procesando!');
                 $.post( 
                     alarm_estimate_form_ajax_obj.ajax_url, 
                     data, 
@@ -227,7 +228,7 @@
                                 });
                             },300 );
                         } else {
-                            alert( 'Error: '+response.data.message );
+                            alertError( 'Error: '+response.data.message );
                         }
                         
                 })

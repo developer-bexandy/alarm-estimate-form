@@ -20,6 +20,11 @@
  * @subpackage Alarm_Estimate_Form/public
  * @author     Bexandy Rodriguez <developer@bexandyrodriguez.com.ve>
  */
+
+require_once( plugin_dir_path( __FILE__ ) .'/../vendor/autoload.php');
+
+use Authy\AuthyApi;
+
 class Alarm_Estimate_Form_Public {
 
 	/**
@@ -209,16 +214,16 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+			
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
 			if ($response->ok()) {
-                self::DisplaySuccess($response->message());
+                self::DisplaySuccess($response->message(), $country_code, $phone_number, $via);
             } else {
                 self::DisplayError($response->errors()->message);
             }			
-            */            
-            self::DisplaySuccess("Mensaje Enviado", $country_code, $phone_number, $via);
+                      
+            //self::DisplaySuccess("Mensaje Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -245,16 +250,16 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+			
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
 			if ($response->ok()) {
-                self::DisplaySuccess($response->message());
+                self::DisplaySuccess($response->message(), $country_code, $phone_number, $via);
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            */	
-            self::DisplaySuccess("token verificado", $country_code, $phone_number, $via);	
+            	
+            //self::DisplaySuccess("token verificado", $country_code, $phone_number, $via);	
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
