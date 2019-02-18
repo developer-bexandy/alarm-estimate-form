@@ -45,12 +45,17 @@
         var tab2 = $('.calculator__tab--second');
         var tab3 = $('.calculator__tab--third');
         var checkTab2Hogar = $('#checkAlarmaSi, #checkAlarmaNo');
-        var checkTab3Negocio = $('#checkTieneNegocioSi, #checkTieneNegocioNo');
+        var checkTab2Negocio = $('#checkAlarmaSiNegocio, #checkAlarmaNoNegocio');
+        var checkTab3Negocio = $('#checkNegocioMas1500, #checkNegocioMenos1500');
         var checkTab3Hogar = $('#checkPiso, #checkMas180, #checkMenos180');
         var CalculaHogar = $('#tab3HorarCalcula');
         var CalculaNegocio = $('#tab3NegocioCalcula');
         var checkPiso = $('.calculator__question--hogar #checkPiso');
         var checkCodigoPostal = $('.calculator__question--hogar #questionInputVivienda');
+        var requestVerificationBusiness = $('#request_verification_business');
+        var mensajeVerificarCodeBusiness = $('#desc_verify_token_business');
+        var verificationCodeBusiness = $('#verification_code_business');
+        var timer_via, timer_request;
 
         checkHogar.on( "click", function() {
             tab1.addClass('calculator__tab--active');
@@ -59,7 +64,6 @@
                     divHogar.fadeIn();
                 });
             },300 );
-
         });
 
         checkNegocio.on( "click", function() {
@@ -71,14 +75,13 @@
                     divNegocio.fadeIn();
                 });
             },300 );
-
         });
 
         checkPiso.on('click', function () {
             var self = this;
             setTimeout(function () {
                 $(self).parent().parent().fadeOut('slow', function () {
-                    checkCodigoPostal.parent().parent().fadeIn();
+                    requestVerification.parent().parent().fadeIn();
                 });
             },300 );
         });
@@ -93,7 +96,6 @@
         });
 
         $('#questionButtontVivienda').on("click", function () {
-
             var questionInputVivienda = $('#questionInputVivienda');
             var inputValue = questionInputVivienda.val();
             if (isValidZipCode(inputValue)) {
@@ -131,6 +133,12 @@
             tab2.addClass('calculator__tab--active');
         });
 
+        checkTab2Negocio.on('click', function () {
+            tab1.removeClass('calculator__tab--active');
+            tab1.addClass('calculator__tab--done');
+            tab2.addClass('calculator__tab--active');
+        });
+
         checkTab3Negocio.on('click', function () {
             tab2.removeClass('calculator__tab--active');
             tab2.addClass('calculator__tab--done');
@@ -144,10 +152,7 @@
         });
 
         function submitForm(id){
-
             var data_object = $('#'+id+'Form').serialize();
-
-
             var data = {
                 action: 'alarm_email_results',
                 nonce_code: alarm_estimate_form_ajax_obj.nonce,
@@ -168,6 +173,20 @@
             });
         }
 
+        function alertSuccess(message){
+            $('div#notificationes').get(0).innerHTML = '<div class="alert alert-success" role="alert">'+message+'</div>';
+            setTimeout(function(){
+                $('div#notificationes').get(0).innerHTML = '';
+            },3000);                
+        }
+
+        function alertError(message){
+            $('div#notificationes').get(0).innerHTML = '<div class="alert alert-danger" role="alert">'+message+'</div>';
+            setTimeout(function(){
+                $('div#notificationes').get(0).innerHTML = '';
+            },3000);                
+        }
+
         requestVerification.on('click', function () {
             var self = this;
             var data_object = {
@@ -176,48 +195,92 @@
                 'via': $('#via').val(),
                 'request_verification' : true
             };
-            var data = {
-                action: 'request_phone_verification',
-                nonce_code: alarm_estimate_form_ajax_obj.nonce,
-                data: data_object
-            };
-            $.post( 
-                alarm_estimate_form_ajax_obj.ajax_url, 
-                data, 
-                function(response) {
-                    if (response.success) {
-                        mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
-                        setTimeout(function () {
-                            $(self).parent().parent().fadeOut('slow', function () {
-                                verificationCode.parent().parent().fadeIn(400, function() {
-                                    var contador = 14;
-                                    var contadorElem = $('#resend_counter');
-                                    var timer = setInterval(function() {
-                                        contadorElem.text('Reenviar código (' + contador + ')');
-                                        if (contador-- == 0) {
-                                            $('#resend_counter').addClass('oculto');
-                                            $('#verification-resend-link').removeClass('oculto');
-                                            $('#verification-change-link').removeClass('oculto');
-                                            clearInterval(timer);
-                                        }
-                                    }, 1000);
+
+            if (isValidTel(data_object.phone_number)) {
+                var data = {
+                    action: 'request_phone_verification',
+                    nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                    data: data_object
+                };
+                $.post( 
+                    alarm_estimate_form_ajax_obj.ajax_url, 
+                    data, 
+                    function(response) {
+                        if (response.success) {
+                            alertSuccess('Código de verificación enviado!');
+                            mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
+                            setTimeout(function () {
+                                $(self).parent().parent().fadeOut('slow', function () {
+                                    verificationCode.parent().parent().fadeIn(400, function() {
+                                        var contador = 14;
+                                        var contadorElem = $('#resend_counter');
+                                        timer_request = setInterval(function() {
+                                            contadorElem.text('Reenviar código (' + contador + ')');
+                                            if (contador-- == 0) {
+                                                $('#resend_counter').addClass('oculto');
+                                                $('#verification-resend-link').removeClass('oculto');
+                                                $('#verification-change-link').removeClass('oculto');
+                                                clearInterval(timer_request);
+                                            }
+                                        }, 1000);
+                                    });
                                 });
-                            });
-                        },300 );
-                    } else {
-                        alert( 'Error: '+response.data.message );
-                    }
-                    
+                            },300 );
+                        } else {
+                            alert( 'Error: '+response.data.message );
+                        }
+                        
                 })
                 .fail(function(response) {
-                alert( "error" );
-              });
-
+                    alert( "error" );
+                });
+            } else {
+                alertError('Formato no válido!');                
+                $('input#phone_number').css('border-color','red');
+                $('input#phone_number').focus();
+            }
         });
 
 
         $('#verify_token').on('click', function () {
-            alert('entre al evento click');
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code').val(),
+                'phone_number': $('#phone_number').val(),
+                'via': $('#via').val(),
+                'verify_token' : true
+            };
+
+            if (isValidTel(data_object.phone_number)) {
+                var data = {
+                    action: 'verify_token',
+                    nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                    data: data_object
+                };
+                $.post( 
+                    alarm_estimate_form_ajax_obj.ajax_url, 
+                    data, 
+                    function(response) {
+                        if (response.success) {
+                            alertSuccess(response.data.message);
+                            setTimeout(function () {
+                                $(self).parent().parent().fadeOut('slow', function () {
+                                    $('#tab3').fadeIn();
+                                });
+                            },300 );
+                        } else {
+                            alertError( 'Error: '+response.data.message );
+                        }
+                        
+                })
+                .fail(function(response) {
+                    alert( "error" );
+                });
+            } else {
+                alertError('Formato no válido!');                
+                $('input#phone_number').css('border-color','red');
+                $('input#phone_number').focus();
+            }
         });
 
         $('#verification-resend-link').on('click', function () {
@@ -238,6 +301,7 @@
                 data, 
                 function(response) {
                     if (response.success) {
+                        alertSuccess('Código de verificación reenviado!');
                         mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
                         setTimeout(function () {
                             verificationCode.parent().parent().fadeIn(400, function() {
@@ -247,19 +311,73 @@
                                 $('#verification-change-link').addClass('oculto');
                                 var contador = 14;
                                 var contadorElem = $('#resend_counter');
-                                var timer = setInterval(function() {
+                                var timer_resend = setInterval(function() {
                                     contadorElem.text('Reenviar código (' + contador + ')');
                                     if (contador-- == 0) {
                                         $('#resend_counter').addClass('oculto');
                                         $('#verification-resend-link').removeClass('oculto');
                                         $('#verification-change-link').removeClass('oculto');
-                                        clearInterval(timer);
+                                        clearInterval(timer_resend);
                                     }
                                 }, 1000);
                             });
                         },300 );
                     } else {
-                        alert( 'Error: '+response.data.message );
+                        alertError('Error: '+response.data.message);
+                    }
+                    
+                })
+                .fail(function(response) {
+                alert( "error" );
+              });
+        });
+
+        $('#change_via').on('click', function () {
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code').val(),
+                'phone_number': $('#phone_number').val(),
+                'via': 'call',
+                'request_verification' : true
+            };
+            var data = {
+                action: 'request_phone_verification',
+                nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                data: data_object
+            };
+            $.post( 
+                alarm_estimate_form_ajax_obj.ajax_url, 
+                data, 
+                function(response) {
+                    if (response.success) {
+                        alertSuccess('Recibirá una llamada con su código!');
+                        mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
+                        setTimeout(function () {
+                            verificationCode.parent().parent().fadeIn(400, function() {
+                                $('#resend_counter').text('Reenviar código (4000)');
+                                $('#resend_counter').removeClass('oculto');
+                                $('#verification-resend-link').addClass('oculto');
+                                $('#verification-change-link').addClass('oculto');
+                                $('#change_via').addClass('oculto');
+                                var contador = 3999;
+                                var contadorElem = $('#resend_counter');
+                                if (typeof timer_request !== 'undefined') {
+                                        clearInterval(timer_request);
+                                    }
+                                timer_via = setInterval(function() {
+                                    contadorElem.text('Reenviar código (' + contador + ')');
+                                    if (contador-- == 0) {
+                                        $('#resend_counter').addClass('oculto');
+                                        $('#verification-resend-link').removeClass('oculto');
+                                        $('#verification-change-link').removeClass('oculto');
+                                        $('#change_via').removeClass('oculto');
+                                        clearInterval(timer_via);
+                                    }
+                                }, 1000);
+                            });
+                        },300 );
+                    } else {
+                        alertError('Error: '+response.data.message);
                     }
                     
                 })
@@ -269,10 +387,20 @@
         });
 
         $('#verification-change-link').on('click', function () {
-            alert('entre al de cambiar numero');
-        });
+            var self = this;
+            $('#phone_number').val('');
 
-        
+            setTimeout(function () {
+                $(self).parent().parent().parent().parent().parent().fadeOut('slow', function () {
+                    requestVerification.parent().parent().fadeIn(400, function() {
+                        $('#resend_counter').removeClass('oculto');
+                        $('#verification-resend-link').addClass('oculto');
+                        $('#verification-change-link').addClass('oculto');
+                        $('#phone_number').focus();
+                    })
+                })
+            });
+        });
 
         CalculaHogar.on('click', function () {
             var nombre = $('#tab3HorarNombre').val(),
@@ -303,6 +431,229 @@
                 $('#tab3HorarNombre').css('border-color','red');
                 $('#tab3HorarNombre').focus();
             }
+        });
+
+        requestVerificationBusiness.on('click', function () {
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code_business').val(),
+                'phone_number': $('#phone_number_business').val(),
+                'via': $('#via_business').val(),
+                'request_verification' : true
+            };
+
+            if (isValidTel(data_object.phone_number)) {
+                var data = {
+                    action: 'request_phone_verification',
+                    nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                    data: data_object
+                };
+                $.post( 
+                    alarm_estimate_form_ajax_obj.ajax_url, 
+                    data, 
+                    function(response) {
+                        if (response.success) {
+                            alertSuccess('Código de verificación enviado!');
+                            mensajeVerificarCodeBusiness[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
+                            setTimeout(function () {
+                                $(self).parent().parent().fadeOut('slow', function () {
+                                    verificationCodeBusiness.parent().parent().fadeIn(400, function() {
+                                        var contador = 14;
+                                        var contadorElem = $('#resend_counter_business');
+                                        timer_request = setInterval(function() {
+                                            contadorElem.text('Reenviar código (' + contador + ')');
+                                            if (contador-- == 0) {
+                                                $('#resend_counter_business').addClass('oculto');
+                                                $('#verification-resend-link_business').removeClass('oculto');
+                                                $('#verification-change-link_business').removeClass('oculto');
+                                                clearInterval(timer_request);
+                                            }
+                                        }, 1000);
+                                    });
+                                });
+                            },300 );
+                        } else {
+                            alert( 'Error: '+response.data.message );
+                        }
+                        
+                })
+                .fail(function(response) {
+                    alert( "error" );
+                });
+            } else {
+                alertError('Formato no válido!');                
+                $('input#phone_number').css('border-color','red');
+                $('input#phone_number').focus();
+            }
+        });
+
+        $('#verify_token_business').on('click', function () {
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code_business').val(),
+                'phone_number': $('#phone_number_business').val(),
+                'via': $('#via_business').val(),
+                'verify_token' : true
+            };
+
+            if (isValidTel(data_object.phone_number)) {
+                var data = {
+                    action: 'verify_token',
+                    nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                    data: data_object
+                };
+                $.post( 
+                    alarm_estimate_form_ajax_obj.ajax_url, 
+                    data, 
+                    function(response) {
+                        if (response.success) {
+                            alertSuccess(response.data.message);
+                            setTimeout(function () {
+                                $(self).parent().parent().fadeOut('slow', function () {
+                                    $('#tab3_business').fadeIn();
+                                });
+                            },300 );
+                        } else {
+                            alertError( 'Error: '+response.data.message );
+                        }
+                        
+                })
+                .fail(function(response) {
+                    alert( "error" );
+                });
+            } else {
+                alertError('Formato no válido!');                
+                $('input#phone_number_business').css('border-color','red');
+                $('input#phone_number_business').focus();
+            }
+        });
+
+        $('#verification-resend-link_business').on('click', function () {
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code_business').val(),
+                'phone_number': $('#phone_number_business').val(),
+                'via': $('#via_business').val(),
+                'request_verification' : true
+            };
+            var data = {
+                action: 'request_phone_verification',
+                nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                data: data_object
+            };
+            $.post( 
+                alarm_estimate_form_ajax_obj.ajax_url, 
+                data, 
+                function(response) {
+                    if (response.success) {
+                        alertSuccess('Código de verificación reenviado!');
+                        mensajeVerificarCodeBusiness[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
+                        setTimeout(function () {
+                            verificationCodeBusiness.parent().parent().fadeIn(400, function() {
+                                $('#resend_counter_business').text('Reenviar código (15)');
+                                $('#resend_counter_business').removeClass('oculto');
+                                $('#verification-resend-link_business').addClass('oculto');
+                                $('#verification-change-link_business').addClass('oculto');
+                                var contador = 14;
+                                var contadorElem = $('#resend_counter_business');
+                                var timer_resend = setInterval(function() {
+                                    contadorElem.text('Reenviar código (' + contador + ')');
+                                    if (contador-- == 0) {
+                                        $('#resend_counter_business').addClass('oculto');
+                                        $('#verification-resend-link_business').removeClass('oculto');
+                                        $('#verification-change-link_business').removeClass('oculto');
+                                        clearInterval(timer_resend);
+                                    }
+                                }, 1000);
+                            });
+                        },300 );
+                    } else {
+                        alertError('Error: '+response.data.message);
+                    }
+                    
+                })
+                .fail(function(response) {
+                alert( "error" );
+              });
+        });
+
+        $('#change_via_business').on('click', function () {
+            var self = this;
+            var data_object = {
+                'country_code' : $('#country_code_business').val(),
+                'phone_number': $('#phone_number_business').val(),
+                'via': 'call',
+                'request_verification' : true
+            };
+            var data = {
+                action: 'request_phone_verification',
+                nonce_code: alarm_estimate_form_ajax_obj.nonce,
+                data: data_object
+            };
+            $.post( 
+                alarm_estimate_form_ajax_obj.ajax_url, 
+                data, 
+                function(response) {
+                    if (response.success) {
+                        alertSuccess('Recibirá una llamada con su código!');
+                        mensajeVerificarCodeBusiness[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
+                        setTimeout(function () {
+                            verificationCodeBusiness.parent().parent().fadeIn(400, function() {
+                                $('#resend_counter_business').text('Reenviar código (4000)');
+                                $('#resend_counter_business').removeClass('oculto');
+                                $('#verification-resend-link_business').addClass('oculto');
+                                $('#verification-change-link_business').addClass('oculto');
+                                $('#change_via_business').addClass('oculto');
+                                var contador = 3999;
+                                var contadorElem = $('#resend_counter_business');
+                                if (typeof timer_request !== 'undefined') {
+                                        clearInterval(timer_request);
+                                    }
+                                timer_via = setInterval(function() {
+                                    contadorElem.text('Reenviar código (' + contador + ')');
+                                    if (contador-- == 0) {
+                                        $('#resend_counter_business').addClass('oculto');
+                                        $('#verification-resend-link_business').removeClass('oculto');
+                                        $('#verification-change-link_business').removeClass('oculto');
+                                        $('#change_via_business').removeClass('oculto');
+                                        clearInterval(timer_via);
+                                    }
+                                }, 1000);
+                            });
+                        },300 );
+                    } else {
+                        alertError('Error: '+response.data.message);
+                    }
+                    
+                })
+                .fail(function(response) {
+                alert( "error" );
+              });
+        });
+
+        $('#verification-change-link_business').on('click', function () {
+            var self = this;
+            $('#phone_number_business').val('');
+
+            setTimeout(function () {
+                $(self).parent().parent().parent().parent().parent().fadeOut('slow', function () {
+                    requestVerificationBusiness.parent().parent().fadeIn(400, function() {
+                        $('#resend_counter_business').removeClass('oculto');
+                        $('#verification-resend-link_business').addClass('oculto');
+                        $('#verification-change-link_business').addClass('oculto');
+                        $('#phone_number_business').focus();
+                    })
+                })
+            });
+        });
+
+        $('#selectTipoNegocio').on('change', function () {
+            var self = this;
+            setTimeout(function () {
+                $(self).parent().parent().fadeOut('slow', function () {
+                    $(self).parent().parent().next().fadeIn();
+                });
+            },300 );
         });
 
         CalculaNegocio.on('click', function () {
@@ -353,11 +704,8 @@
                 return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(Email);
             }
             return true;
-
         }
-
-
-	 });
+    });
 
 })( jQuery );
 

@@ -75,6 +75,13 @@ class Alarm_Estimate_Form_Public {
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/alarm-estimate-form-public.css', array(), $this->version, 'all' );
 
+		wp_enqueue_style( 'bootstrap_css', 
+  					'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css', 
+  					array(), 
+  					'4.1.3'
+  					); 
+
+
 	}
 
 	/**
@@ -102,6 +109,18 @@ class Alarm_Estimate_Form_Public {
 	        'ajax_url' => admin_url( 'admin-ajax.php' ),
 	        'nonce'    => $title_nonce,
 	    ));
+
+	    wp_enqueue_script( 'popper_js', 
+  					'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', 
+  					array(), 
+  					'1.14.3', 
+  					true); 
+	    wp_enqueue_script( 'bootstrap_js', 
+  					'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js', 
+  					array('jquery','popper_js'), 
+  					'4.1.3', 
+  					true); 
+
 
 	}
 
@@ -176,7 +195,7 @@ class Alarm_Estimate_Form_Public {
 	 **/
 	public function alarm_estimate_form_request_verification() {
 		if( ! wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form' ) ) die( 'Stop!');
-		if( !isset($_POST['data']['request_verification']) ){ return; }
+		if( !isset($_POST['data']['request_verification']) ){ self::DisplayError('Formulario no válido');return; }
 
 		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
 		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
@@ -210,12 +229,13 @@ class Alarm_Estimate_Form_Public {
 	 *
 	 **/
 	public function alarm_estimate_form_verify_token() {
-		if( !isset($_POST['verify_token']) ){ return; }
+		if( ! wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form' ) ) die( 'Stop!');
+		if( !isset($_POST['data']['verify_token']) ){ self::DisplayError('Formulario no válido');return; }
 
-		$country_code = (isset($_POST['country_code']) ) ? $_POST['country_code'] : '';
-		$phone_number = (isset($_POST['phone_number']) )  ? $_POST['phone_number']  : '';
-		$via = (isset($_POST['via']) ) ? $_POST['via'] : '';
-		$country_code = (isset($_POST['token']) ) ? $_POST['token'] : '';
+		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
+		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
+		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
+		$country_code = (isset($_POST['data']['token']) ) ? $_POST['data']['token'] : '';
 
 		//gets our api details from the database.
 		$api_details = get_option('verifysms'); #verifysms is what we use to identify our option, it can be anything
@@ -234,7 +254,7 @@ class Alarm_Estimate_Form_Public {
                 self::DisplayError($response->errors()->message);
             }	
             */	
-            self::DisplayError("token verificado");	
+            self::DisplaySuccess("token verificado", $country_code, $phone_number, $via);	
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}

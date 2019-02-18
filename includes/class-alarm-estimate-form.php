@@ -186,6 +186,10 @@ class Alarm_Estimate_Form {
 		$this->loader->add_action( 'wp_ajax_request_phone_verification', $plugin_public, 'alarm_estimate_form_request_verification' );
 		$this->loader->add_action( 'wp_ajax_nopriv_request_phone_verification', $plugin_public, 'alarm_estimate_form_request_verification' );
 
+		// Añadir funciones listener para llamado ajax con action = 'verify_token'
+		$this->loader->add_action( 'wp_ajax_verify_token', $plugin_public, 'alarm_estimate_form_verify_token' );
+		$this->loader->add_action( 'wp_ajax_nopriv_verify_token', $plugin_public, 'alarm_estimate_form_verify_token' );
+
 	}
 
 	/**

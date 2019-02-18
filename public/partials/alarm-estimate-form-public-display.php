@@ -34,6 +34,8 @@
         </div>
     </div>
 
+    <div id="notificationes"></div>
+
     <div class="calculator__question calculator__question--first">
         <p class="question-descr">¿Necesitar proteger un hogar o un negocio?</p>
         <div class="question">
@@ -47,9 +49,8 @@
     </div>
 
     <div class="calculator__question calculator__question--hogar">
-            <form id="hogarForm">
-
-            <div class="question--horar" >
+        <form id="hogarForm">
+            <div class="question--horar" style="display: block">
                 <p class="question-descr">¿Es una vivienda habitual o suele estar vaciá?</p>
                 <div class="question">
                     <input type="checkbox" id="checkHabitual" name="checkHabitual" class="checkbox-question-next"/>
@@ -136,7 +137,7 @@
             </div>
 
             <!----------------tab3--------------->      
-            <div class="question--horar" style="display: block">
+            <div class="question--horar">
                 <p class="question-descr">Número Telefónico Movil</p>
                 <div class="question__input-wrapper">
                     <input type="hidden" id="country_code" name="country_code" value="+34" />
@@ -156,10 +157,9 @@
 
                     <input type="text" id="verification_code" placeholder="Código de Verificación" class="question__input" value="" />
                     <div class="question__button" id="verify_token">Enviar</div>
-                </div>
-                
+                </div>                
                 <div class="phone-verification-code-links">
-                    <p class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
+                    <p id="change_via" class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
 
                     <div class="dont_receive_code">
                         <p>No ha recibido un código?</p>
@@ -169,23 +169,12 @@
                             <li><a id="verification-change-link" class="verification-change-link oculto">Cambiar número telefónico</a></li>
                         </ul>
                     </div>
-                </div>
-                
-            </div>
-
-        </div>
-
-            <div class="question--horar">
-                <p class="question-descr">Código postal de tu vivienda</p>
-                <div class="question__input-wrapper">
-                    <input type="text" id="questionInputVivienda" name="questionInputVivienda" class="question__input" >
-                    <div class="question__button" id="questionButtontVivienda">Continuar</div>
-                </div>
+                </div>                
             </div>
                 
-            
+            <!----------------Datos Personales---------------> 
 
-            <div class="question--horar tab3">
+            <div id="tab3" class="question--horar tab3">
                 <div class="tab3__row">
                     <div class="tab3__descr">Nombre <small>*</small></div>
                     <div class="tab3__input">
@@ -208,6 +197,13 @@
                 </div>
 
                 <div class="tab3__row">
+                    <div class="tab3__descr">Código postal de tu vivienda</div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="questionInputVivienda" name="questionInputVivienda">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
                     <div class="tab3__descr">He leido y acepto la politica de privacidad<small>*</small></div>
                     <div class="tab3__input">
                         <input type="checkbox" id="checkTab3HorarAcepto" name="checkTab3HorarAcepto"/>
@@ -218,16 +214,16 @@
                         </label>
                     </div>
                 </div>
+
                 <div class="tab3__row">
                     <div class="calcula-button question__button" id="tab3HorarCalcula">Calcula tu precio ya</div>
                 </div>
-
             </div>
-            </form>
-        </div>
+        </form>
+    </div>
 
     <div class="calculator__question calculator__question--negocio">
-            <form id="negocioForm">
+        <form id="negocioForm">
             <div class="question--negocio" style="display: block">
                 <p class="question-descr">¿Cuantos empleados tiene habitualmente el negocio?</p>
                 <div class="question">
@@ -292,6 +288,17 @@
                 </div>
             </div>
                 
+            <div class="question--negocio">
+                <p class="question-descr">¿Tiene rejas u otra medida de seguridad en el local?</p>
+                <div class="question">
+                    <input type="checkbox" id="checkTieneNegocioSi" name="checkTieneNegocioSi" class="checkbox-question-next"/>
+                    <label for="checkTieneNegocioSi">Si</label>
+                </div>
+                <div class="question">
+                    <input type="checkbox" id="checkTieneNegocioNo" name="checkTieneNegocioNo" class="checkbox-question-next"/>
+                    <label for="checkTieneNegocioNo">No</label>
+                </div>
+            </div>
 
             <div class="question--negocio">
                 <p class="question-descr">¿Tienes alarma con otra empresa?</p>
@@ -304,7 +311,6 @@
                     <label for="checkAlarmaNoNegocio">No</label>
                 </div>
             </div>
-
             
             <!-------------------tab2--------------------->
             
@@ -324,7 +330,7 @@
                 <p class="question-descr">Seleccione el tipo de negocio</p>
                 <div class="question">
                     <input type="checkbox" id="checkNegocioEmpresa" name="checkNegocioEmpresa" class="checkbox-question-next"/>
-                    <select id="selectTipoNegocio" name="selectTipoNegocio" class="form-control checkbox-question-next">
+                    <select id="selectTipoNegocio" name="selectTipoNegocio" class="checkbox-question-next">
                         <option value="salud">Salud</option>
                         <option value="hosteleria">Hosteleria</option>
                         <option value="peluqueria">Peluquería</option>                        
@@ -353,29 +359,45 @@
 
             
             <!----------------tab3--------------->
-            <div class="question--negocio">
-                <p class="question-descr">¿Código postal de tu negocio?</p>
-                <div class="question__input-wrapper">
-                    <input type="text" class="question__input" id="postalNegocioInput" name="postalNegocioInput">
-                    <div class="question__button" id="postalNegocioButton">Continuar</div>
-                </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">¿Tiene rejas u otra medida de seguridad en el local?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkTieneNegocioSi" name="checkTieneNegocioSi" class="checkbox-question-next"/>
-                    <label for="checkTieneNegocioSi">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkTieneNegocioNo" name="checkTieneNegocioNo" class="checkbox-question-next"/>
-                    <label for="checkTieneNegocioNo">No</label>
-                </div>
-            </div>
-
             
+            <div class="question--negocio">
+                <p class="question-descr">Número Telefónico Movil</p>
+                <div class="question__input-wrapper">
+                    <input type="hidden" id="country_code_business" name="country_code" value="+34" />
+                    <div id="verify-country-code" class="input-group-addon">+34</div>
+                    <input type="text" id="phone_number_business" name="phone_number"  placeholder="+2348059794251" required class="question__input"/>
+                    <input type="hidden" id="via_business" name="via" value="sms" />
+                    <div class="question__button" id="request_verification_business">Verificar</div>
+                </div>
+                <div class="center_text">
+                    <span class="request_leyenda"><?php esc_attr_e( 'Nos pondremos en contacto con usted en el número de arriba con un código de verificación', 'alarm-estimate-form' ) ?></span>
+                </div>                
+            </div>      
 
-            <div class="question--negocio tab3">
+            <div class="question--negocio">
+                <p class="question-descr" id="desc_verify_token_business">Por favor, escriba el código de verificación enviado a</p>
+                <div class="question__input-wrapper">
+
+                    <input type="text" id="verification_code_business" placeholder="Código de Verificación" class="question__input" value="" />
+                    <div class="question__button" id="verify_token_business">Enviar</div>
+                </div>                
+                <div class="phone-verification-code-links">
+                    <p id="change_via_business" class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
+
+                    <div class="dont_receive_code">
+                        <p>No ha recibido un código?</p>
+                        <ul id="verification-resend-code_business" class="list-unstyled">
+                            <li id="resend_counter_business" class="resend_counter">Reenviar código (15)</li>
+                            <li><a id="verification-resend-link_business" class="verification-resend-link oculto">Reenviar Código</a></li>
+                            <li><a id="verification-change-link_business" class="verification-change-link oculto">Cambiar número telefónico</a></li>
+                        </ul>
+                    </div>
+                </div>                
+            </div>
+
+            <!----------------Datos Personales--------------->
+
+            <div id="tab3_business" class="question--negocio tab3">
                 <div class="tab3__row">
                     <div class="tab3__descr">Nombre <small>*</small></div>
                     <div class="tab3__input">
@@ -398,6 +420,13 @@
                 </div>
 
                 <div class="tab3__row">
+                    <div class="tab3__descr">¿Código postal de tu negocio?</div>
+                    <div class="tab3__input">
+                        <input type="text" class="question__input" id="postalNegocioInput" name="postalNegocioInput">
+                    </div>
+                </div>
+
+                <div class="tab3__row">
                     <div class="tab3__descr">He leido y acepto la politica de privacidad<small>*</small></div>
                     <div class="tab3__input">
                         <input type="checkbox" id="checkTab3AceptoNegocio" name="checkTab3AceptoNegocio"/>
@@ -414,9 +443,7 @@
                 </div>
 
             </div>
-            </form>
-        </div>
-
-
+        </form>
+    </div>
 
 </div>
