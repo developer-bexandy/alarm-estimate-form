@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       ALARM ESTIMATE FORM
  * Plugin URI:        https://github.com/developer-bexandy/alarm-estimate-form
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Usar el shortcode <strong>[alarm_estimate_form]</strong> dónde desee mostrar el formulario. Ingresar las claves de API Twilio necesarias para la verificación por SMS y envío de Whatsapp en <strong>Ajustes->ALARM ESTIME FORM SMS</strong>.
  * Version:           1.0.0
  * Author:            Bexandy Rodriguez
  * Author URI:        https://bexandyrodriguez.com.ve

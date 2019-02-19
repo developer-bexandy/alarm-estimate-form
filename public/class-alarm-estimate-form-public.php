@@ -135,17 +135,16 @@ class Alarm_Estimate_Form_Public {
 	 **/
 	public function shortcode_alarm_estimate_form($atts, $content = null){
 
-	    include_once( 'partials/alarm-estimate-form-public-display.php' );
+		$template_file = dirname(__FILE__) .'/partials/alarm-estimate-form-public-display.php';
+		$html = file_get_contents($template_file);
+		ob_start();
+		?>
+		<?php echo $html;?>
+	    <?php
+	    $data = ob_get_clean();
+	    return $data;
 	}
 
-	/**
-	 * Registrar el shortcode para mostrar el formulario.
-	 *
-	 **/
-	public function register_shortcode_alarm_estimate_form(){
-
-	    add_shortcode( 'alarm_estimate_form',  'shortcode_alarm_estimate_form' );
-	}
 
 	/**
 	 * Designs for displaying Notices
@@ -243,7 +242,7 @@ class Alarm_Estimate_Form_Public {
 		$country_code = (isset($_POST['data']['token']) ) ? $_POST['data']['token'] : '';
 
 		//gets our api details from the database.
-		$api_details = get_option('verifysms'); #verifysms is what we use to identify our option, it can be anything
+		$api_details = get_option('alarm-estimate-form'); #alarm-estimate-form is what we use to identify our option, it can be anything
 
 		if(is_array($api_details) AND count($api_details) != 0) {
 			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
