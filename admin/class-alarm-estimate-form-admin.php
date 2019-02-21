@@ -72,9 +72,22 @@ class Alarm_Estimate_Form_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+		global $pagenow; 
+		if ( ( 'admin.php' === $pagenow ) && ( 'alarm-estimate-form-registro' === $_GET['page'] ) ) { 
+
+			wp_enqueue_style( 'bootstrap_css', 
+			'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', 
+  					array(), '4.3.1'); 
+			wp_script_add_data( 'bootstrap_css', array( 'integrity', 'crossorigin' ) , array( 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', 'anonymous' ) );
+
+			wp_enqueue_style( 'bootstrap_table_css', 
+				'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css', 
+	  					array(), '1.13.4');
+		} 
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/alarm-estimate-form-admin.css', array(), $this->version, 'all' );
 
+		 
 	}
 
 	/**
@@ -95,9 +108,38 @@ class Alarm_Estimate_Form_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		global $pagenow; 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/alarm-estimate-form-admin.js', array( 'jquery' ), $this->version, false );
 
+		if ( ( 'admin.php' === $pagenow ) && ( 'alarm-estimate-form-registro' === $_GET['page'] ) ) { 
+			
+			wp_enqueue_script( 'admin-record-table-js', plugin_dir_url( __FILE__ ) . 'js/admin-record-table.js', array( 'jquery' ), $this->version, false );
+
+			wp_enqueue_script( 'popper_js', 
+	  			'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', 
+	  			array(), '1.14.7', true); 
+			wp_script_add_data( 'popper_js', array( 'integrity', 'crossorigin' ) , array( 'sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1', 'anonymous' ) );
+
+		    wp_enqueue_script( 'bootstrap_js', 
+	  			'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', 
+	  			array('jquery','popper_js'), '4.3.1', true); 
+		    wp_script_add_data( 'bootstrap_js', array( 'integrity', 'crossorigin' ) , array( 'sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM', 'anonymous' ) );
+
+		    wp_enqueue_script( 'bootstrap_table_js', 
+	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.js', 
+	  			array('jquery','popper_js', 'bootstrap_js'), '1.13.4', true); 
+
+		    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
+	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
+	  			array('jquery','popper_js', 'bootstrap_js', 'bootstrap_table_js'), '1.13.4', true);
+
+		    $title_nonce = wp_create_nonce('get_alarma_data_table');
+		    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
+		        'ajax_url' => admin_url( 'admin-ajax.php' ),
+		        'nonce'    => $title_nonce,
+		    ));
+		}
+		
 	}
 
 	/**
@@ -114,7 +156,9 @@ class Alarm_Estimate_Form_Admin {
 		 * Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 *
 		 **/
-		add_options_page( 'ALARM ESTIMATE FORM PAGE', 'ALARM ESTIMATE FORM SMS', 'manage_options', $this->plugin_name, array($this, 'display_alarm_estimate_form_settings_page') );
+		add_menu_page( 'Presupuestos', 'Presupuestos', 'manage_options', $this->plugin_name );
+
+		add_submenu_page($this->plugin_name,  'Configuración', 'Configuración', 'manage_options', $this->plugin_name, array($this, 'display_alarm_estimate_form_settings_page') );
 	}
 
 	/**
@@ -205,5 +249,117 @@ class Alarm_Estimate_Form_Admin {
 		$newinput['prod_api_key'] = trim($input['prod_api_key']);
 
 		return $newinput;
+	}
+
+	public function record_table_submenu_page() {
+		add_submenu_page($this->plugin_name,  'Registro', 'Registro', 'manage_options', $this->plugin_name.'-registro', array($this, 'display_record_table_submenu_page') );
+	}
+
+	public function display_record_table_submenu_page() {
+		//
+		require_once plugin_dir_path( __FILE__ ) . 'partials/admin-record-table-display.php';
+	}
+
+	public function get_alarma_data_table() {
+		global $wpdb;
+		global $pagenow;
+		$table_name = $wpdb->prefix . "alarm_estimate_form";
+
+		if( isset( $_POST['nonce_code'] ) && wp_verify_nonce( $_POST['nonce_code'], 'get_alarma_data_table') ) {
+			$data = [
+				[
+					'id' => 1,
+	                'fecha' =>'20/02/2019',
+	                'nombre' => 'Bexandy Rodriguez',
+	                'telefono' => '4124279158',
+	                'paquete' => 'paquete1'
+				],
+				[
+					id => 2,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 3,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 4,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 5,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 6,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 7,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 8,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 9,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 10,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 11,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				],
+				[
+					id => 12,
+	                'fecha' => '20/02/2019',
+	                'nombre' =>'Odaly Fernandez',
+	                'telefono' => '4265601603',
+	                'paquete' => 'paquete2'
+				]
+			];
+
+			wp_send_json_success($data);
+		} else {
+			wp_send_json_error(
+			    array( 
+	            		'message' => 'no nonce'
+	            	)
+		  	);
+		}
 	}
 }

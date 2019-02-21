@@ -157,11 +157,18 @@ class Alarm_Estimate_Form {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-		// Add setting menu item 
+		// Agregar menú de Presupuesto y submenú de configuración
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_alarm_estimate_form_setting' );
 
-		// Saves and update settings
+		// Guardar y actualizar la configuración
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'alarm_estimate_form_admin_settings_save' );
+
+		// Agregar submenú de Registro de Solicitudes
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'record_table_submenu_page' );
+
+		// Añadir funciones listener para llamado ajax con action = 'alarm_estimate_form_submit'
+		$this->loader->add_action( 'wp_ajax_get_data_table', $plugin_admin, 'get_alarma_data_table' );
+		$this->loader->add_action( 'wp_ajax_nopriv_get_data_table', $plugin_admin, 'get_alarma_data_table' );
 
 	}
 
@@ -189,6 +196,10 @@ class Alarm_Estimate_Form {
 		// Añadir funciones listener para llamado ajax con action = 'verify_token'
 		$this->loader->add_action( 'wp_ajax_verify_token', $plugin_public, 'alarm_estimate_form_verify_token' );
 		$this->loader->add_action( 'wp_ajax_nopriv_verify_token', $plugin_public, 'alarm_estimate_form_verify_token' );
+
+		// Añadir funciones listener para llamado ajax con action = 'alarm_estimate_form_submit'
+		$this->loader->add_action( 'wp_ajax_alarm_estimate_form_submit', $plugin_public, 'alarm_estimate_form_submit' );
+		$this->loader->add_action( 'wp_ajax_nopriv_alarm_estimate_form_submit', $plugin_public, 'alarm_estimate_form_submit' );
 
 	}
 

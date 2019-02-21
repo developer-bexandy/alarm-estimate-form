@@ -154,9 +154,11 @@
         function submitForm(id){
             var data_object = $('#'+id+'Form').serialize();
             var data = {
-                action: 'alarm_email_results',
+                action: 'alarm_estimate_form_submit',
                 nonce_code: alarm_estimate_form_ajax_obj.nonce,
-                data: data_object
+                data: data_object,
+                rama_alarma: $('#questionFirst').find('input[name="rama_alarma"]').val()
+
             };
 
             CalculaNegocio.text('Solicitud de envío ...');
@@ -203,10 +205,14 @@
                     data: data_object
                 };
                 alertSuccess('Procesando!');
+                //$('#waiting').addClass("loading");
+                //$('#waiting').show();
                 $.post( 
                     alarm_estimate_form_ajax_obj.ajax_url, 
                     data, 
                     function(response) {
+                        //$('#waiting').removeClass("loading");
+                        //$('#waiting').hide();
                         if (response.success) {
                             alertSuccess('Código de verificación enviado!');
                             mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
@@ -249,6 +255,7 @@
                 'country_code' : $('#country_code').val(),
                 'phone_number': $('#phone_number').val(),
                 'via': $('#via').val(),
+                'verification_code' : $('#verification_code').val(),
                 'verify_token' : true
             };
 
@@ -405,11 +412,11 @@
 
         CalculaHogar.on('click', function () {
             var nombre = $('#tab3HorarNombre').val(),
-                phone = $('#tab3HorarInputTel').val(),
+                codigoPostal = $('#tab3HorarInputCodigoPostal').val(),
                 email = $('#tab3HorarInputEmail').val(),
                 acepto = $('#checkTab3HorarAcepto');
             if(isValidNombre(nombre)){
-                if (isValidTel(phone)){
+                if (isValidZipCode(codigoPostal)){
                     if (isValidEmail(email)){
                         if(acepto.is(':checked')){
                             submitForm('hogar');
@@ -419,14 +426,14 @@
                             $('#tab3HorarInputEmail').css('border-color','black');
                         }
                     } else {
-                        $('#tab3HorarInputTel').css('border-color','black');
+                        $('#tab3HorarInputCodigoPostal').css('border-color','black');
                         $('#tab3HorarInputEmail').css('border-color','red');
                         $('#tab3HorarInputEmail').focus();
                     }
                 }   else {
                     $('#tab3HorarNombre').css('border-color','black');
-                    $('#tab3HorarInputTel').css('border-color','red');
-                    $('#tab3HorarInputTel').focus();
+                    $('#tab3HorarInputCodigoPostal').css('border-color','red');
+                    $('#tab3HorarInputCodigoPostal').focus();
                 }
             } else {
                 $('#tab3HorarNombre').css('border-color','red');
@@ -693,7 +700,7 @@
         }
 
         function isValidTel(tel) {
-            return /^\+?[0-9]{9}$/.test(tel);
+            return /^\+?[0-9]{9,11}$/.test(tel);
         }
 
         function isValidNombre(Nombre) {
@@ -706,6 +713,19 @@
             }
             return true;
         }
+
+    });
+
+    $(document).ajaxStart(function() { 
+        //console.log("ajax start");
+        $('#waiting').addClass("loading"); 
+        $('#waiting').show();    
+    });
+
+    $(document).ajaxStop(function() { 
+        //console.log("ajax stop");
+        $('#waiting').removeClass("loading");    
+        $('#waiting').hide(); 
     });
 
 })( jQuery );
