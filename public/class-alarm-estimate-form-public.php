@@ -24,6 +24,7 @@
 require_once( plugin_dir_path( __FILE__ ) .'/../vendor/autoload.php');
 
 use Authy\AuthyApi;
+use Twilio\Rest\Client;
 
 class Alarm_Estimate_Form_Public {
 
@@ -260,12 +261,18 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            */	
+            */
             self::DisplaySuccess("Token Verificado", $country_code, $phone_number, $via);	
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
 	}
+
+	/**
+	 * Guardar los datos recibidos desde el formulario a la  BDD
+	 * y llamar a la función de enviar mensaje por whatsapp
+	 *
+	 **/
 
 	public function alarm_estimate_form_submit() {
 		global $wpdb;
@@ -283,20 +290,20 @@ class Alarm_Estimate_Form_Public {
 		        'codigo_area' => isset($dataArray['country_code'])? $dataArray['country_code'] : null,
 		        'telefono' => isset($dataArray['phone_number'])? $dataArray['phone_number'] : null,
 		        'rama_alarma' => $rama_alarma, 
-		        'residencia_habitual' => isset($dataArray['residencia_habitual'])? filter_var($dataArray['residencia_habitual'],FILTER_VALIDATE_BOOLEAN) : null,
-		        'rejas' => isset($dataArray['rejas'])? filter_var($dataArray['rejas'],FILTER_VALIDATE_BOOLEAN) : null,
-		        'internet' => isset($dataArray['internet'])? filter_var($dataArray['internet'],FILTER_VALIDATE_BOOLEAN) : null,
-		        'historial_robos' => isset($dataArray['historial_robos'])? filter_var($dataArray['historial_robos'],FILTER_VALIDATE_BOOLEAN) : null,
-		        'alarma_competencia' => isset($dataArray['alarma_competencia'])? filter_var($dataArray['alarma_competencia'],FILTER_VALIDATE_BOOLEAN) : null,
+		        'residencia_habitual' => isset($dataArray['residencia_habitual'])? self::convertBoolBin($dataArray['residencia_habitual']) : null,
+		        'rejas' => isset($dataArray['rejas'])? self::convertBoolBin($dataArray['rejas']) : null,
+		        'internet' => isset($dataArray['internet'])? self::convertBoolBin($dataArray['internet']) : null,
+		        'historial_robos' => isset($dataArray['historial_robos'])? self::convertBoolBin($dataArray['historial_robos']) : null,
+		        'alarma_competencia' => isset($dataArray['alarma_competencia'])? self::convertBoolBin($dataArray['alarma_competencia']) : null,
 		        'tipo_vivienda' => isset($dataArray['tipo_vivienda'])? $dataArray['tipo_vivienda'] : null,
-		        'casa_mayor_180mts' => isset($dataArray['casa_mayor_180mts'])? filter_var($dataArray['casa_mayor_180mts'],FILTER_VALIDATE_BOOLEAN) : null,
+		        'casa_mayor_180mts' => isset($dataArray['casa_mayor_180mts'])? self::convertBoolBin($dataArray['casa_mayor_180mts']) : null,
 		        'cantidad_empleados_negocio' => isset($dataArray['cantidad_empleados_negocio'])? $dataArray['cantidad_empleados_negocio'] : null,
 		        'horario_negocio' => isset($dataArray['horario_negocio'])? $dataArray['horario_negocio'] : null,
 		        'tipo_negocio' => isset($dataArray['tipo_negocio'])? $dataArray['tipo_negocio'] : null,
 		        'rama_negocio' => isset($dataArray['rama_negocio'])? $dataArray['rama_negocio'] : null,
 
-		        'nave_mayor_1500mts' => isset($dataArray['nave_mayor_1500mts'])? filter_var($dataArray['nave_mayor_1500mts'],FILTER_VALIDATE_BOOLEAN) : null,
-		        'fecha' => date("d-m-Y",strtotime('now'))
+		        'nave_mayor_1500mts' => isset($dataArray['nave_mayor_1500mts'])? self::convertBoolBin($dataArray['nave_mayor_1500mts']) : null,
+		        'fecha' => current_time('mysql', 1)
 		    );
 
 		    if ($rama_alarma === 'hogar'){
@@ -329,54 +336,35 @@ class Alarm_Estimate_Form_Public {
 		    	}
 		    }
 		    
-			$insert = $wpdb->query("
-				INSERT INTO $table_name(
-					nombre, 
-					correo, 
-					codigo_postal, 
-					codigo_area, 
-					telefono, 
-					rama_alarma, 
-					residencia_habitual, 
-					rejas, 
-					internet, 
-					historial_robos,
-					alarma_competencia,
-					tipo_vivienda,
-					casa_mayor_180mts,
-					cantidad_empleados_negocio,
-					horario_negocio,
-					tipo_negocio,
-					rama_negocio,
-					nave_mayor_1500mts,
-					paquete,
-					fecha 
-				) VALUES(
-					'".$render_variables['nombre']."',
-					'".$render_variables['correo']."',
-					'".$render_variables['codigo_postal']."',
-					'".$render_variables['codigo_area']."',
-					'".$render_variables['telefono']."',
-					'".$render_variables['rama_alarma']."',
-					'".$render_variables['residencia_habitual']."',
-					'".$render_variables['rejas']."',
-					'".$render_variables['internet']."',
-					'".$render_variables['historial_robos']."',
-					'".$render_variables['alarma_competencia']."',
-					'".$render_variables['tipo_vivienda']."',
-					'".$render_variables['casa_mayor_180mts']."',
-					'".$render_variables['cantidad_empleados_negocio']."',
-					'".$render_variables['horario_negocio']."',
-					'".$render_variables['tipo_negocio']."',
-					'".$render_variables['rama_negocio']."',
-					'".$render_variables['nave_mayor_1500mts']."',
-					'".$render_variables['paquete']."',
-					now()
-				)"
-			);
+			$insert = $wpdb->insert($table_name,$render_variables);
 
 			if ($insert) {
-				self::DisplaySuccess("Registro insertado en la BDD");
+				$to = (isset($render_variables['telefono']) ) ? 'whatsapp:'.$render_variables['codigo_area'].$render_variables['telefono'] : '';
+				$sender_id = 'whatsapp:'.'+14155238886';
+				$message = 'Your Wordpress.Desktop order of Estimate has shipped and should be delivered on '.$render_variables['fecha'].'. Details : Websendex Sr/a. '.$render_variables['nombre'].' soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp). Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas. ¡VENTAJAS PROMOCIÓN ONLINE!  Kit Hogar Tyco Alert + Servicio Legalitas: Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de: 2 Vídeo detectores. 1 Detectores de movimiento (O 1 contacto magnético). 1 Central de alarma con pantalla Módulo GSM/GPRS. Sirena de sonido ascendente con 81 decibelios (incluida en central). 1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios). 1 Mando a distancia / O pulsador SOS. Carteles exteriores. Los servicios que van incluidos en la cuota son: Mantenimiento 100% incluido. Envío de los vídeos del salto de alarma a su móvil de forma Inmediata. Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año. Supervisión de la línea GPRS cada 10 minutos. Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma. Aviso de corte de luz. Anti-inhibidor de alta potencia. Conexión Multivía - doble conexión. Servicio asistencia Legalitas.';
+
+				//gets our api details from the database.
+				$api_details = get_option('alarm-estimate-form'); 
+
+				if(is_array($api_details) AND count($api_details) != 0) {
+					$TWILIO_SID = $api_details['api_sid'];
+					$TWILIO_TOKEN = $api_details['api_auth_token'];
+				}
+
+				try {
+					$to = explode(',', $to);
+					$client = new Client($TWILIO_SID, $TWILIO_TOKEN);
+					$response = $client->messages->create(
+						$to,
+						array(
+							'from' => $sender_id,
+							'body' => $message
+						)
+					);
+					self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
+				} catch (Exception $e) {
+					self::DisplayError( $e->getMessage() );
+				}
 			} else {
 				self::DisplayError( $wpdb->last_error );
 			}
@@ -388,7 +376,47 @@ class Alarm_Estimate_Form_Public {
 
 					) );
 		}
-	
+	}
+
+	/**
+	 * Función que procesará el envío del mensaje por whatsapp
+	 *
+	 **/
+	public function send_whatsapp_message($data='') {
+
+		$to = (isset($data['telefono']) ) ? 'whatsapp:'.$data['codigo_area'].$data['telefono'] : '';
+		$sender_id = '+14155238886';
+		$message = 'Your Wordpress.Desktop order of Estimate has shipped and should be delivered on '.$data['fecha'].'. Details : Websendex Sr/a. '.$data['nombre'].' soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp). Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas. ¡VENTAJAS PROMOCIÓN ONLINE!  Kit Hogar Tyco Alert + Servicio Legalitas: Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de: 2 Vídeo detectores. 1 Detectores de movimiento (O 1 contacto magnético). 1 Central de alarma con pantalla Módulo GSM/GPRS. Sirena de sonido ascendente con 81 decibelios (incluida en central). 1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios). 1 Mando a distancia / O pulsador SOS. Carteles exteriores. Los servicios que van incluidos en la cuota son: Mantenimiento 100% incluido. Envío de los vídeos del salto de alarma a su móvil de forma Inmediata. Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año. Supervisión de la línea GPRS cada 10 minutos. Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma. Aviso de corte de luz. Anti-inhibidor de alta potencia. Conexión Multivía - doble conexión. Servicio asistencia Legalitas.';
+
+		//gets our api details from the database.
+		$api_details = get_option('alarm-estimate-form'); 
+
+		if(is_array($api_details) AND count($api_details) != 0) {
+			$TWILIO_SID = $api_details['api_sid'];
+			$TWILIO_TOKEN = $api_details['api_auth_token'];
+		}
+
+		try {
+			$to = explode(',', $to);
+			$client = new Client($TWILIO_SID, $TWILIO_TOKEN);
+			$response = $client->messages->create(
+				$to,
+				array(
+					'from' => $sender_id,
+					'body' => $message
+				)
+			);
+			self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
+		} catch (Exception $e) {
+			self::DisplayError( $e->getMessage() );
+		}
+	}
+
+	public function convertBoolBin($item='')
+	{
+		if ($item === 'true') return '1';
+		if ($item === 'false') return '0';
+		return $item;
 	}
 
 }

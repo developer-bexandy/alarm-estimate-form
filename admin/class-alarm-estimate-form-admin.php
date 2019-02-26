@@ -83,6 +83,11 @@ class Alarm_Estimate_Form_Admin {
 			wp_enqueue_style( 'bootstrap_table_css', 
 				'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css', 
 	  					array(), '1.13.4');
+
+			wp_enqueue_style( 'font_awesome_css', 
+			'https://use.fontawesome.com/releases/v5.7.2/css/all.css', 
+  					array(), '5.7.2'); 
+			wp_script_add_data( 'font_awesome_css', array( 'integrity', 'crossorigin' ) , array( 'sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr', 'anonymous' ) );
 		} 
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/alarm-estimate-form-admin.css', array(), $this->version, 'all' );
@@ -133,12 +138,24 @@ class Alarm_Estimate_Form_Admin {
 	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
 	  			array('jquery','popper_js', 'bootstrap_js', 'bootstrap_table_js'), '1.13.4', true);
 
+		    
+
+		    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
+	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
+	  			array('bootstrap_table_js'), '1.13.4', true);
+
+		    
+
 		    $title_nonce = wp_create_nonce('get_alarma_data_table');
 		    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
 		        'ajax_url' => admin_url( 'admin-ajax.php' ),
 		        'nonce'    => $title_nonce,
 		    ));
+
+		    wp_enqueue_script( 'bootstrap-table-mobile-js', plugin_dir_url( __FILE__ ) . 'js/bootstrap-table-mobile.js', array(), $this->version, false );
 		}
+
+
 		
 	}
 
@@ -266,94 +283,25 @@ class Alarm_Estimate_Form_Admin {
 		$table_name = $wpdb->prefix . "alarm_estimate_form";
 
 		if( isset( $_POST['nonce_code'] ) && wp_verify_nonce( $_POST['nonce_code'], 'get_alarma_data_table') ) {
-			$data = [
-				[
-					'id' => 1,
-	                'fecha' =>'20/02/2019',
-	                'nombre' => 'Bexandy Rodriguez',
-	                'telefono' => '4124279158',
-	                'paquete' => 'paquete1'
-				],
-				[
-					id => 2,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 3,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 4,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 5,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 6,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 7,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 8,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 9,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 10,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 11,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				],
-				[
-					id => 12,
-	                'fecha' => '20/02/2019',
-	                'nombre' =>'Odaly Fernandez',
-	                'telefono' => '4265601603',
-	                'paquete' => 'paquete2'
-				]
-			];
+			
+			$results = $wpdb->get_results("
+				SELECT id, nombre, correo, codigo_postal, telefono, rama_alarma, residencia_habitual, rejas, internet, 
+				historial_robos, alarma_competencia, tipo_vivienda, 
+				casa_mayor_180mts, cantidad_empleados_negocio, 
+				horario_negocio, tipo_negocio, rama_negocio, 
+				nave_mayor_1500mts, paquete, fecha 
+				FROM {$table_name}", ARRAY_A);
+			foreach ($results as $key=>$registro) {
+				$data = array_map(function($item){
+					if ($item === '1') return 'si';
+					if ($item === '0') return 'no';
+					return $item;
+				},$registro);
 
-			wp_send_json_success($data);
+				$registros[] = array_filter($data);
+			}
+
+			wp_send_json_success($registros);
 		} else {
 			wp_send_json_error(
 			    array( 

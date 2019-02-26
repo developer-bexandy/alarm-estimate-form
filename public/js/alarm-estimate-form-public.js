@@ -168,8 +168,9 @@
                CalculaNegocio.text('Solicitud enviada');
               //  document.location.href = 'https://alarmas.plus/respuesta-calcula/';
                setTimeout(function(){
-                   CalculaHogar.text('Calcula tu precio ya');
-                   CalculaNegocio.text('Calcula tu precio ya');
+                document.location.href = 'http://wordpress.desktop/';
+                   //CalculaHogar.text('Calcula tu precio ya');
+                   //CalculaNegocio.text('Calcula tu precio ya');
                },3500);
 
             });
@@ -666,11 +667,11 @@
 
         CalculaNegocio.on('click', function () {
             var nombre = $('#tab3NegacioNombre').val(),
-                phone = $('#tab3NegacioTel').val(),
+                codigoPostal = $('#tab3NegocioInputCodigoPostal').val(),
                 email = $('#tab3NegacioEmail').val(),
                 acepto = $('#checkTab3AceptoNegocio');
             if(isValidNombre(nombre)){
-                if (isValidTel(phone)){
+                if (isValidZipCode(codigoPostal)){
                     if (isValidEmail(email)){
                         if(acepto.is(':checked')){
                             submitForm('negocio');
@@ -680,14 +681,14 @@
                             $('#tab3NegacioEmail').css('border-color','black');
                         }
                     } else {
-                        $('#tab3NegacioTel').css('border-color','black');
+                        $('#tab3NegocioInputCodigoPostal').css('border-color','black');
                         $('#tab3NegacioEmail').css('border-color','red');
                         $('#tab3NegacioEmail').focus();
                     }
                 }   else {
                     $('#tab3NegacioNombre').css('border-color','black');
-                    $('#tab3NegacioTel').css('border-color','red');
-                    $('#tab3NegacioTel').focus();
+                    $('#tab3NegocioInputCodigoPostal').css('border-color','red');
+                    $('#tab3NegocioInputCodigoPostal').focus();
                 }
             } else {
                 $('#tab3NegacioNombre').css('border-color','red');

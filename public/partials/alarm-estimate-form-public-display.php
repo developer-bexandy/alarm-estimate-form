@@ -408,7 +408,7 @@
                 <div class="tab3__row">
                     <div class="tab3__descr">¿Código postal de tu negocio?</div>
                     <div class="tab3__input">
-                        <input type="text" class="question__input" id="postalNegocioInput" name="codigo_postal">
+                        <input type="text" class="question__input" id="tab3NegocioInputCodigoPostal" name="codigo_postal">
                     </div>
                 </div>
 

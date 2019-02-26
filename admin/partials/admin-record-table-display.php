@@ -16,5 +16,6 @@
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
 <div class="container">
+	<h2>Registro de Solicitudes de Presupuesto</h2>
   <table id="table"></table>
 </div>
