@@ -183,7 +183,7 @@ class Alarm_Estimate_Form_Public {
 	 * @since    1.0.0
 	 * @since    1.0.0
 	 **/
-	public function DisplaySuccess($message, $country_code, $phone_number, $via ) { 
+	public function DisplaySuccess($message, $country_code = '', $phone_number = '', $via = '' ) { 
 		wp_send_json_success(
 			    array( 
             		'message' => $message,
@@ -202,8 +202,6 @@ class Alarm_Estimate_Form_Public {
 		if( ! wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form' ) ) die( 'Stop!');
 		if( !isset($_POST['data']['request_verification']) ){ self::DisplayError('Formulario no válido');return; }
 
-		//sleep(60);
-
 		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
 		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
 		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
@@ -216,16 +214,17 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+			
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
+
 			if ($response->ok()) {
                 self::DisplaySuccess($response->message(), $country_code, $phone_number, $via);
             } else {
                 self::DisplayError($response->errors()->message);
-            }			
-            */ 
-            self::DisplaySuccess("Código de Verificación Enviado", $country_code, $phone_number, $via);
+            }		
+			
+			//self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -239,7 +238,6 @@ class Alarm_Estimate_Form_Public {
 		if( ! wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form' ) ) die( 'Stop!');
 		if( !isset($_POST['data']['verify_token']) ){ self::DisplayError('Formulario no válido');return; }
 		
-		//sleep(60);
 		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
 		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
 		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
@@ -253,7 +251,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+		
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationCheck($phone_number, $country_code, $verification_code);
 			if ($response->ok()) {
@@ -261,8 +259,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            */
-            self::DisplaySuccess("Token Verificado", $country_code, $phone_number, $via);	
+            
+            //self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -277,6 +275,9 @@ class Alarm_Estimate_Form_Public {
 	public function alarm_estimate_form_submit() {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "alarm_estimate_form";
+
+		//gets our api details from the database.
+		$api_details = get_option('alarm-estimate-form');
 
 		if( isset( $_POST['nonce_code'] ) && wp_verify_nonce( $_POST['nonce_code'], 'alarm_estimate_form') ) {
 
@@ -339,32 +340,12 @@ class Alarm_Estimate_Form_Public {
 			$insert = $wpdb->insert($table_name,$render_variables);
 
 			if ($insert) {
-				$to = (isset($render_variables['telefono']) ) ? 'whatsapp:'.$render_variables['codigo_area'].$render_variables['telefono'] : '';
-				$sender_id = 'whatsapp:'.'+14155238886';
-				$message = 'Your Wordpress.Desktop order of Estimate has shipped and should be delivered on '.$render_variables['fecha'].'. Details : Websendex Sr/a. '.$render_variables['nombre'].' soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp). Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas. ¡VENTAJAS PROMOCIÓN ONLINE!  Kit Hogar Tyco Alert + Servicio Legalitas: Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de: 2 Vídeo detectores. 1 Detectores de movimiento (O 1 contacto magnético). 1 Central de alarma con pantalla Módulo GSM/GPRS. Sirena de sonido ascendente con 81 decibelios (incluida en central). 1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios). 1 Mando a distancia / O pulsador SOS. Carteles exteriores. Los servicios que van incluidos en la cuota son: Mantenimiento 100% incluido. Envío de los vídeos del salto de alarma a su móvil de forma Inmediata. Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año. Supervisión de la línea GPRS cada 10 minutos. Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma. Aviso de corte de luz. Anti-inhibidor de alta potencia. Conexión Multivía - doble conexión. Servicio asistencia Legalitas.';
-
-				//gets our api details from the database.
-				$api_details = get_option('alarm-estimate-form'); 
-
-				if(is_array($api_details) AND count($api_details) != 0) {
-					$TWILIO_SID = $api_details['api_sid'];
-					$TWILIO_TOKEN = $api_details['api_auth_token'];
+				if ($api_details['api_seleccion'] == 'twilio') {
+					self::send_whatsapp_message($render_variables);	
+				} else {
+					self::send_message_apiwha($render_variables);
 				}
-
-				try {
-					$to = explode(',', $to);
-					$client = new Client($TWILIO_SID, $TWILIO_TOKEN);
-					$response = $client->messages->create(
-						$to,
-						array(
-							'from' => $sender_id,
-							'body' => $message
-						)
-					);
-					self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
-				} catch (Exception $e) {
-					self::DisplayError( $e->getMessage() );
-				}
+							
 			} else {
 				self::DisplayError( $wpdb->last_error );
 			}
@@ -385,7 +366,7 @@ class Alarm_Estimate_Form_Public {
 	public function send_whatsapp_message($data='') {
 
 		$to = (isset($data['telefono']) ) ? 'whatsapp:'.$data['codigo_area'].$data['telefono'] : '';
-		$sender_id = '+14155238886';
+		$sender_id = 'whatsapp:'.'+14155238886';
 		$message = 'Your Wordpress.Desktop order of Estimate has shipped and should be delivered on '.$data['fecha'].'. Details : Websendex Sr/a. '.$data['nombre'].' soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp). Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas. ¡VENTAJAS PROMOCIÓN ONLINE!  Kit Hogar Tyco Alert + Servicio Legalitas: Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de: 2 Vídeo detectores. 1 Detectores de movimiento (O 1 contacto magnético). 1 Central de alarma con pantalla Módulo GSM/GPRS. Sirena de sonido ascendente con 81 decibelios (incluida en central). 1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios). 1 Mando a distancia / O pulsador SOS. Carteles exteriores. Los servicios que van incluidos en la cuota son: Mantenimiento 100% incluido. Envío de los vídeos del salto de alarma a su móvil de forma Inmediata. Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año. Supervisión de la línea GPRS cada 10 minutos. Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma. Aviso de corte de luz. Anti-inhibidor de alta potencia. Conexión Multivía - doble conexión. Servicio asistencia Legalitas.';
 
 		//gets our api details from the database.
@@ -406,17 +387,150 @@ class Alarm_Estimate_Form_Public {
 					'body' => $message
 				)
 			);
-			self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
+
+			if (is_null($response->errorMessage)) {
+		        self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
+		    } else {
+		        self::DisplayError($response->errorMessage);
+		    }	
+		    //self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
 	}
 
-	public function convertBoolBin($item='')
-	{
+	public function convertBoolBin($item='') {
 		if ($item === 'true') return '1';
 		if ($item === 'false') return '0';
 		return $item;
+	}
+
+	public function alert($value='') {
+		echo "<script type='text/javascript'>
+				    alert('".$value."');
+				    </script>";
+	}
+
+	public function send_message_apiwha($data='') {
+		//gets our api details from the database.
+		$api_details = get_option('alarm-estimate-form'); 
+
+		if(is_array($api_details) AND count($api_details) != 0) {
+			$my_apikey = $api_details['apiwha_apikey'];
+			$destination = str_replace('+', '', $data['codigo_area']).$data['telefono'];
+		}
+
+		
+		$message = "Estimad@ Sr/a. XXXXXX soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp).
+
+Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas.
+
+¡VENTAJAS PROMOCIÓN ONLINE!
+
+ Kit Hogar Tyco Alert + Servicio Legalitas:
+
+Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de:
+ 
+      ·     2 Vídeo detectores
+      ·     1 Detectores de movimiento (O 1 contacto magnético)
+      ·     1 Central de alarma con pantalla
+      ·     Módulo GSM/GPRS
+      ·     Sirena de sonido ascendente con 81 decibelios (incluida en central)
+      ·     1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios)
+      ·     1 Mando a distancia / O pulsador SOS
+      ·     Carteles exteriores
+
+      Los servicios que van incluidos en la cuota son:
+      ·     Mantenimiento 100% incluido.
+      ·     Envío de los vídeos del salto de alarma a su móvil de forma Inmediata
+      ·     Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año
+      ·     Supervisión de la línea GPRS cada 10 minutos
+      ·     Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma
+      ·     Aviso de corte de luz
+      ·     Anti-inhibidor de alta potencia
+      ·    Conexión Multivía - doble conexión
+      ·    Servicio asistencia Legalitas
+      ·    Contamos con aplicación móvil Tyco Alert para que puedan visualizar y controlar su hogar/negocio cuando quiera
+
+
+Equipo 0€, único pago de instalación antes 99€ ahora 49€ (Oferta contratación online) Y 31€ Cuota mensual. Precios sin IVA
+
+(Instalación 59,29€ y 37,51€ de cuota mensual precio final IVA incluido)
+
+Pago instalación previa por tarjeta de crédito o transferencia bancaria.
+
+PARA ASEGURARSE ESTA PROMOCIÓN RESPONDA ESTE EMAIL O LLAME A 900 897 932 DE ESTAR INTERESAD@ EN ESTA OFERTA, POR FAVOR RESPONDA ESTE EMAIL Y RELLENE LOS DATOS ABAJO INDICADOS, PARA QUE CON ESTOS DATOS PODAMOS RELLENAR EL CONTRATO DE INSTALACIÓN Y ENVIÁRSELO EN UN SEGUNDO EMAIL PARA SU FIRMA Y DEVOLUCIÓN.
+
+NOMBRE Y APELLIDOS O (NOMBRE EMPRESA):
+NIF/CIF:
+FECHA NACIMIENTO:
+CALLE:
+CÓDIGO POSTAL:
+LOCALIDAD:
+PROVINCIA:
+NOMBRE DE PERSONA FIRMA CONTRATO:
+NIF/NIE:
+TELÉFONO FIJO:
+TELÉFONO MÓVIL:
+EMAIL:
+
+Nº cuenta 20 dígitos para cargos de cuota mensual:
+------------------------------------------------------------
+DIRECCIÓN DE INSTALACIÓN:
+CÓDIGO POSTAL:
+LOCALIDAD:
+PROVINCIA:
+TELÉFONO FIJO (INSTALACIÓN):
+--------------------------------------------------------------
+A continuación nombres y teléfonos en caso de salto de alarma, para el protocolo de seguridad por orden de preferencia:
+
+Nombre y Apellidos:                                        Teléfono fijo instalación:
+Nombre y Apellidos:                                        Teléfono móvil:
+Nombre y Apellidos:                                        Teléfono móvil:
+Nombre y Apellidos:                                        Teléfono móvil:
+
+Con estos datos rellenaremos el contrato  se lo haremos llegar para que lo firme y nos lo devuelva.
+
+Para ampliarle esta información y las posibles dudas que le puedan surgir, así como para hacer un estudio de seguridad de su negocio, le volveremos a llamar dentro de unos días sin compromiso, para poder personalizar la información.
+
+Si lo desea puede contactar conmigo por uno de los medios abajo indicados. 
+ 
+Distribuidor autorizado TYCO
+
+Manuel Soto. Asesor Seguridad TYCO
+manuel.soto@alarmas.plus
+https://alarmas.plus
+Línea Gratuita 900 897 932
+TLF: 911 010 511 / 931 002 517 / 955 300 077
+TLF: 617 079 129 / FAX: 911 019 222
+Sotpra,S.L. - B91663344"; 
+		$api_url = "http://panel.apiwha.com/send_message.php"; 
+		$api_url .= "?apikey=". urlencode ($my_apikey); 
+		$api_url .= "&number=". urlencode ($destination);
+		$api_url .= "&text=". urlencode ($message); 
+		//$my_result_object = json_decode(file_get_contents($api_url, false)); 
+		
+		try {
+			$response = wp_remote_get( $api_url );
+			if ( is_array( $response ) ) {
+			 $response_code = wp_remote_retrieve_response_code( $response );
+			  $body = json_decode( wp_remote_retrieve_body( $response ), true );
+			}
+
+			if ($response_code === 200) {
+				if ($body['success']) {
+					self::DisplaySuccess($body['description']);
+				} else {
+					self::DisplayError($body['description']);
+				}
+								
+			} else {
+				self::DisplayError($response['response']['message']);
+			}
+		} catch (Exception $e) {
+			self::DisplayError( $e->getMessage() );
+		}
+		
 	}
 
 }

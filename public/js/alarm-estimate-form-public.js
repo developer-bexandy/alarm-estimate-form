@@ -166,9 +166,11 @@
             $.post( alarm_estimate_form_ajax_obj.ajax_url, data, function(response) {
                CalculaHogar.text('Solicitud enviada');
                CalculaNegocio.text('Solicitud enviada');
+               alertSuccess('Solicitud enviada!');
+               alert('Solicitud enviada!');
               //  document.location.href = 'https://alarmas.plus/respuesta-calcula/';
                setTimeout(function(){
-                document.location.href = 'http://wordpress.desktop/';
+                document.location.href = '/';
                    //CalculaHogar.text('Calcula tu precio ya');
                    //CalculaNegocio.text('Calcula tu precio ya');
                },3500);
@@ -701,7 +703,7 @@
         }
 
         function isValidTel(tel) {
-            return /^\+?[0-9]{9,11}$/.test(tel);
+            return /^\+?[0-9]{8,11}$/.test(tel);
         }
 
         function isValidNombre(Nombre) {

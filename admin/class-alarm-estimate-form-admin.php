@@ -197,28 +197,33 @@ class Alarm_Estimate_Form_Admin {
 
 		register_setting( $this->plugin_name, $this->plugin_name, array($this, 'plugin_options_validate') );
 
-		add_settings_section('alarm_estimate_form_sendex', 'Configuración para envío de SMS - Whatsapp', array($this, 'alarm_estimate_form_sendex_section_text'), 'alarm-estimate-form-settings-page');
-
-		add_settings_section('alarm_estimate_form_verifysms', 'Configuración para Verificación de Teléfono por SMS', array($this, 'alarm_estimate_form_verifysms_section_text'), 'alarm-estimate-form-settings-page');
+		add_settings_section('alarm_estimate_form_settings', 'CONFIGURACIÓN DE API TWILIO - APIWHA', array($this, 'alarm_estimate_form_section_text'), 'alarm-estimate-form-settings-page');
 
 
-		add_settings_field('api_sid', 'API SID', array($this, 'sendex_setting_sid'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_sendex');
+		add_settings_field('api_sid', 'API SID', array($this, 'sendex_setting_sid'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 
-		add_settings_field('api_auth_token', 'API AUTH TOKEN', array($this, 'sendex_setting_token'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_sendex');
+		add_settings_field('api_auth_token', 'API AUTH TOKEN', array($this, 'sendex_setting_token'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 
 		
 
-		add_settings_field('prod_api_key', 'PRODUCTION API KEY', array($this, 'alarm_estimate_form_setting_key'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_verifysms');
+		add_settings_field('prod_api_key', 'PRODUCTION API KEY', array($this, 'alarm_estimate_form_setting_key'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
+
+
+
+		add_settings_field('apiwha_apikey', 'APIWHA API KEY', array($this, 'alarm_estimate_form_apiwha_apikey'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
+
+		add_settings_field('api_seleccion', 'SELECCIONAR API PARA ENVIO DE WHATSAPP', array($this, 'alarm_estimate_form_api_seleccion'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 
 	}
+
 
 	
 	/**
 	 * Mostrar el subtitulo en la configuración
 	 *
 	 **/
-	public function alarm_estimate_form_sendex_section_text() {
-		echo '<h3>Editar detalles de la API de Twilio</h3>';
+	public function alarm_estimate_form_section_text() {
+		echo '<h3>Key y Token de las diferentes API utilizadas</h3>';
 	}
 
 	/**
@@ -227,7 +232,8 @@ class Alarm_Estimate_Form_Admin {
 	 **/
 	public function sendex_setting_sid() {
 		$options = get_option($this->plugin_name);
-		echo "<input id='plugin_text_string' name='$this->plugin_name[api_sid]' size='40' type='text' value='{$options['api_sid']}' />";
+		echo "<input id='twilio_api_sid' name='$this->plugin_name[api_sid]' size='40' type='text' value='{$options['api_sid']}' />
+			<p class='description'>Twilio - utilizado para envío de mensajes por Whatsapp</p>";
 	}
 
 	/**
@@ -236,24 +242,45 @@ class Alarm_Estimate_Form_Admin {
 	 **/
 	public function sendex_setting_token() {
 		$options = get_option($this->plugin_name);
-		echo "<input id='plugin_text_string' name='$this->plugin_name[api_auth_token]' size='40' type='text' value='{$options['api_auth_token']}' />";
+		echo "<input id='twilio_api_auth_token' name='$this->plugin_name[api_auth_token]' size='40' type='text' value='{$options['api_auth_token']}' />
+			<p class='description'>Twilio - utilizado para envío de mensajes por Whatsapp</p>";
 	}
 
-	/**
-	 * Mostrar el subtitulo en la configuración
-	 *
-	 **/
-	public function alarm_estimate_form_verifysms_section_text() {
-		echo '<h3>Editar detalles de la API de Verificación de Twilio</h3>';
-	}
-
+	
 	/**
 	 * Renderizar el campo prod_api_key
 	 *
 	 **/
 	public function alarm_estimate_form_setting_key() {
 		$options = get_option($this->plugin_name);
-		echo "<input id='plugin_text_string' name='$this->plugin_name[prod_api_key]' size='40' type='text' value='{$options['prod_api_key']}' />";
+		echo "<input id='twilio_prod_api_key' name='$this->plugin_name[prod_api_key]' size='40' type='text' value='{$options['prod_api_key']}' />
+			<p class='description'>Twilio - utilizado para verificación de números telefónicos por SMS o llamadas</p>";
+	}
+
+	
+	/**
+	 * Renderizar el campo apiwha_apikey
+	 *
+	 **/
+	public function alarm_estimate_form_apiwha_apikey() {
+		$options = get_option($this->plugin_name);
+		echo "<input id='apiwha_apikey' name='$this->plugin_name[apiwha_apikey]' size='40' type='text' value='{$options['apiwha_apikey']}' />
+			<p class='description'>APIWHA - utilizado para envío de mensajes por Whatsapp</p>";
+	}
+
+	/**
+	 * Renderizar el campo api_seleccion
+	 *
+	 **/
+	public function alarm_estimate_form_api_seleccion() {
+		$options = get_option($this->plugin_name);
+
+		// Get the value of this option.
+		$checked_twilio = checked($options['api_seleccion'],'twilio',true);
+		$checked_apiwha = checked($options['api_seleccion'],'apiwha',true);
+
+		echo "<label><input id='twilio_api_seleccion' type='radio' name='$this->plugin_name[api_seleccion]' value='twilio' {$checked_twilio} class='tog' > TWILIO</label>
+        <label><input id='apiwha_api_seleccion' type='radio' name='$this->plugin_name[api_seleccion]' value='apiwha' {$checked_apiwha} class='tog' > APIWHA</label>";
 	}
 
 	/**
@@ -264,6 +291,8 @@ class Alarm_Estimate_Form_Admin {
 		$newinput['api_sid'] = trim($input['api_sid']);
 		$newinput['api_auth_token'] = trim($input['api_auth_token']);
 		$newinput['prod_api_key'] = trim($input['prod_api_key']);
+		$newinput['apiwha_apikey'] = trim($input['apiwha_apikey']);
+		$newinput['api_seleccion'] = trim($input['api_seleccion']);
 
 		return $newinput;
 	}
