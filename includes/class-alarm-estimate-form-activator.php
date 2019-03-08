@@ -75,8 +75,11 @@ class Alarm_Estimate_Form_Activator {
 	 	$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
 	 	$sql = "CREATE TABLE `$table_name` (
 	 		`id` INT(11) NOT NULL AUTO_INCREMENT,
-	 		`nombre_paquete` VARCHAR(40) DEFAULT NULL,
-	 		PRIMARY KEY(id)
+	 		`slug` VARCHAR(40) NOT NULL,
+	 		`nombre` VARCHAR(40) DEFAULT NULL,
+	 		`descripcion` TEXT DEFAULT NULL,
+	 		PRIMARY KEY(id),
+	 		UNIQUE(slug)
 	 	) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 	 	";
 	 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {

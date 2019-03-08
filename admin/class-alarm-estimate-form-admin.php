@@ -73,21 +73,25 @@ class Alarm_Estimate_Form_Admin {
 		 * class.
 		 */
 		global $pagenow; 
-		if ( ( 'admin.php' === $pagenow ) && ( 'alarm-estimate-form-registro' === $_GET['page'] ) ) { 
+		if ( 'admin.php' === $pagenow ) { 
 
 			wp_enqueue_style( 'bootstrap_css', 
 			'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', 
   					array(), '4.3.1'); 
 			wp_script_add_data( 'bootstrap_css', array( 'integrity', 'crossorigin' ) , array( 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', 'anonymous' ) );
 
-			wp_enqueue_style( 'bootstrap_table_css', 
-				'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css', 
-	  					array(), '1.13.4');
-
 			wp_enqueue_style( 'font_awesome_css', 
-			'https://use.fontawesome.com/releases/v5.7.2/css/all.css', 
-  					array(), '5.7.2'); 
+				'https://use.fontawesome.com/releases/v5.7.2/css/all.css', 
+	  			array(), '5.7.2'); 
 			wp_script_add_data( 'font_awesome_css', array( 'integrity', 'crossorigin' ) , array( 'sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr', 'anonymous' ) );
+
+			if ('alarm-estimate-form-registro' === $_GET['page']) {
+				wp_enqueue_style( 'bootstrap_table_css', 
+					'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css', 
+		  			array(), '1.13.4');
+				
+			}
+
 		} 
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/alarm-estimate-form-admin.css', array(), $this->version, 'all' );
@@ -116,10 +120,8 @@ class Alarm_Estimate_Form_Admin {
 		global $pagenow; 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/alarm-estimate-form-admin.js', array( 'jquery' ), $this->version, false );
 
-		if ( ( 'admin.php' === $pagenow ) && ( 'alarm-estimate-form-registro' === $_GET['page'] ) ) { 
+		if ( ( 'admin.php' === $pagenow ) ) { 
 			
-			wp_enqueue_script( 'admin-record-table-js', plugin_dir_url( __FILE__ ) . 'js/admin-record-table.js', array( 'jquery' ), $this->version, false );
-
 			wp_enqueue_script( 'popper_js', 
 	  			'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', 
 	  			array(), '1.14.7', true); 
@@ -130,32 +132,51 @@ class Alarm_Estimate_Form_Admin {
 	  			array('jquery','popper_js'), '4.3.1', true); 
 		    wp_script_add_data( 'bootstrap_js', array( 'integrity', 'crossorigin' ) , array( 'sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM', 'anonymous' ) );
 
-		    wp_enqueue_script( 'bootstrap_table_js', 
-	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.js', 
-	  			array('jquery','popper_js', 'bootstrap_js'), '1.13.4', true); 
+		    if ( 'alarm-estimate-form-registro' === $_GET['page'] ) {
+		    	wp_enqueue_script( 'admin-record-table-js', plugin_dir_url( __FILE__ ) . 'js/admin-record-table.js', array( 'jquery' ), $this->version, false );
 
-		    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
-	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
-	  			array('jquery','popper_js', 'bootstrap_js', 'bootstrap_table_js'), '1.13.4', true);
+		    	wp_enqueue_script( 'bootstrap_table_js', 
+		  			'https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.js', 
+		  			array('jquery','popper_js', 'bootstrap_js'), '1.13.4', true); 
 
+			    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
+		  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
+		  			array('jquery','popper_js', 'bootstrap_js', 'bootstrap_table_js'), '1.13.4', true);
+
+			    
+
+			    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
+		  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
+		  			array('bootstrap_table_js'), '1.13.4', true);
+
+			    
+
+			    $title_nonce = wp_create_nonce('get_alarma_data_table');
+			    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
+			        'ajax_url' => admin_url( 'admin-ajax.php' ),
+			        'nonce'    => $title_nonce,
+			    ));
+
+			    wp_enqueue_script( 'bootstrap-table-mobile-js', plugin_dir_url( __FILE__ ) . 'js/bootstrap-table-mobile.js', array(), $this->version, false );
+			}
+			
+			if ( 'alarm-estimate-form-paquetes' === $_GET['page'] ) {
+				
+				$title_nonce = wp_create_nonce('package_form_nonce_code');
+				$params = array ( 
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					'nonce'    => $title_nonce,
+					);
+				
+				wp_enqueue_script( 'package_form_ajax_handle', 
+					plugin_dir_url( __FILE__ ) . 'js/package_form-ajax-handler.js', 
+					array( 'jquery' ), $this->version, false );				
+				wp_localize_script( 'package_form_ajax_handle', 'params', $params );
+				
+			}
+			
 		    
-
-		    wp_enqueue_script( 'bootstrap_table_locale_es_ES_js', 
-	  			'https://unpkg.com/bootstrap-table@1.13.4/dist/locale/bootstrap-table-es-ES.min.js', 
-	  			array('bootstrap_table_js'), '1.13.4', true);
-
-		    
-
-		    $title_nonce = wp_create_nonce('get_alarma_data_table');
-		    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
-		        'ajax_url' => admin_url( 'admin-ajax.php' ),
-		        'nonce'    => $title_nonce,
-		    ));
-
-		    wp_enqueue_script( 'bootstrap-table-mobile-js', plugin_dir_url( __FILE__ ) . 'js/bootstrap-table-mobile.js', array(), $this->version, false );
 		}
-
-
 		
 	}
 
@@ -312,6 +333,8 @@ class Alarm_Estimate_Form_Admin {
 		$table_name = $wpdb->prefix . "alarm_estimate_form";
 
 		if( isset( $_POST['nonce_code'] ) && wp_verify_nonce( $_POST['nonce_code'], 'get_alarma_data_table') ) {
+
+			$paquetes = self::obtenerPaquetes();
 			
 			$results = $wpdb->get_results("
 				SELECT id, nombre, correo, codigo_postal, telefono, rama_alarma, residencia_habitual, rejas, internet, 
@@ -319,12 +342,161 @@ class Alarm_Estimate_Form_Admin {
 				casa_mayor_180mts, cantidad_empleados_negocio, 
 				horario_negocio, tipo_negocio, rama_negocio, 
 				nave_mayor_1500mts, paquete, fecha 
-				FROM {$table_name}", ARRAY_A);
+				FROM {$table_name} ORDER BY id DESC", ARRAY_A);
 			foreach ($results as $key=>$registro) {
 				$data = array_map(function($item){
 					if ($item === '1') return 'si';
 					if ($item === '0') return 'no';
 					return $item;
+				},$registro);
+
+				$data = self::reemplazarValores($data, $paquetes);
+
+				$registros[] = array_filter($data);
+			}
+
+			wp_send_json_success($registros);
+		} else {
+			wp_send_json_error(
+			    array( 
+	            		'message' => 'no nonce'
+	            	)
+		  	);
+		}
+	}
+
+	/**
+	 * Registrar submenu de definición de paquetes.
+	 *
+	 **/
+	public function setting_package_submenu_page() {
+		add_submenu_page($this->plugin_name,  'Paquetes', 'Paquetes', 'manage_options', $this->plugin_name.'-paquetes', array($this, 'display_package_form_submenu_page') );
+	}
+
+	/**
+	 * Mostrar formularo de definición de paquetes.
+	 *
+	 **/
+	public function display_package_form_submenu_page() {
+		//
+		require_once plugin_dir_path( __FILE__ ) . 'partials/admin-package-form-display.php';
+	}
+
+	/**
+	 * Guardar los datos recibidos desde el formulario de definicion de paquetes
+	 *
+	 **/
+
+	public function save_package_form() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
+
+
+		if( isset( $_POST['package_form_nonce'] ) && wp_verify_nonce( $_POST['package_form_nonce'], 'package_form_nonce_code') ) {
+			// sanitize the input
+			$data = $_POST['datos'] ? $_POST['datos'] : '';
+			parse_str($data, $dataArray);
+			$nombrePaqueteA = sanitize_text_field( $dataArray['nombrePaqueteA'] );
+			$descripcionPaqueteA = urlencode ($dataArray['descripcionPaqueteA']);
+			$nombrePaqueteB = sanitize_text_field( $dataArray['nombrePaqueteB'] );
+			$descripcionPaqueteB = urlencode ($dataArray['descripcionPaqueteB']);
+			$nombrePaqueteC = sanitize_text_field( $dataArray['nombrePaqueteC'] );
+			$descripcionPaqueteC = urlencode ($dataArray['descripcionPaqueteC']);
+			$nombrePaqueteD = sanitize_text_field( $dataArray['nombrePaqueteD'] );
+			$descripcionPaqueteD =  urlencode ($dataArray['descripcionPaqueteD']);
+			$nombrePaqueteE = sanitize_text_field( $dataArray['nombrePaqueteE'] );
+			$descripcionPaqueteE = urlencode ($dataArray['descripcionPaqueteE']);
+
+			$variables = array (
+				'1' => array (
+					'slug' => 'paqueteA',
+		        	'nombre' => $nombrePaqueteA,
+		        	'descripcion' => $descripcionPaqueteA
+				),
+				'2' => array (
+					'slug' => 'paqueteB',
+		        	'nombre' => $nombrePaqueteB,
+		        	'descripcion' => $descripcionPaqueteB
+				),
+				'3' => array (
+					'slug' => 'paqueteC',
+		        	'nombre' => $nombrePaqueteC,
+		        	'descripcion' => $descripcionPaqueteC
+				),
+				'4' => array (
+					'slug' => 'paqueteD',
+		        	'nombre' => $nombrePaqueteD,
+		        	'descripcion' => $descripcionPaqueteD
+				),
+				'5' => array (
+					'slug' => 'paqueteE',
+		        	'nombre' => $nombrePaqueteE,
+		        	'descripcion' => $descripcionPaqueteE
+				)
+			);
+
+			$error = false;
+
+			$results = $wpdb->get_col("SELECT slug FROM {$table_name}");
+
+			foreach ($variables as $key => $paquete) {
+				$data = array(
+			        'slug' => $paquete['slug'],
+			        'nombre' => $paquete['nombre'],
+			        'descripcion' => $paquete['descripcion']
+		    	);
+
+		    	if (in_array($data['slug'], $results)) {
+		    		$wpdb->update($table_name, $data, array('slug' => $data['slug']));
+		    	} else {
+		    		$wpdb->insert($table_name, $data);
+		    	}
+		    	
+
+
+		    	if (!empty($wpdb->last_error)) {
+					$error = true;
+					wp_send_json_error(
+					    array( 
+			            		'message' => $wpdb->last_error
+			            	)
+				  	);
+				} 
+			}
+
+			if (!$error) {
+				self::get_package_form_data();
+			}
+			
+		}			
+		else {
+			wp_die( __( 'Invalid nonce specified', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
+						'response' 	=> 403,
+						'back_link' => 'admin.php?page=' . $this->plugin_name.'-paquetes',
+				) );
+		}
+
+	}
+
+
+	/**
+	 * Obtener Datos de Paquetes en la BDD
+	 *
+	 **/
+
+	public function get_package_form_data() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
+
+		if( isset( $_POST['package_form_nonce'] ) && wp_verify_nonce( $_POST['package_form_nonce'], 'package_form_nonce_code') ) {
+			
+			$results = $wpdb->get_results("
+				SELECT id, slug, nombre, descripcion
+				FROM {$table_name}", ARRAY_A);
+
+			foreach ($results as $key=>$registro) {
+				$data = array_map(function($item){
+					return urldecode($item);
 				},$registro);
 
 				$registros[] = array_filter($data);
@@ -339,4 +511,43 @@ class Alarm_Estimate_Form_Admin {
 		  	);
 		}
 	}
+
+	/**
+	 * Obtener datos de los paquetes definidos desde la BDD
+	 *
+	 **/
+	public function obtenerPaquetes() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
+
+		$results = $wpdb->get_results("
+			SELECT id, slug, nombre, descripcion FROM {$table_name}", ARRAY_A);
+
+		$registros = array();
+
+		foreach ($results as $key=>$registro) {
+			$data = array_map(function($item){
+				return urldecode($item);
+			},$registro);
+			
+			$registros[$data['slug']] = $data;
+		}
+
+		return $registros;
+	}
+
+	/**
+	 * Reemplazar las variables por sus valores del cliente en los
+	 * mensajes definidos en los paquetes
+	 *
+	 **/
+	public function reemplazarValores($data='', $paquetes = '') {
+
+
+		$data['paquete'] = $paquetes[$data['paquete']] ? $paquetes[$data['paquete']]['nombre'] : $data['paquete'];
+
+		return $data;
+	}
+
+
 }

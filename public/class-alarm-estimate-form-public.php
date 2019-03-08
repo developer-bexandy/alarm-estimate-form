@@ -214,7 +214,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			
+			/*
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
 
@@ -223,8 +223,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }		
-			
-			//self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
+			*/
+			self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -251,7 +251,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-		
+			/*
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationCheck($phone_number, $country_code, $verification_code);
 			if ($response->ok()) {
@@ -259,8 +259,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            
-            //self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
+            */
+            self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -298,42 +298,53 @@ class Alarm_Estimate_Form_Public {
 		        'alarma_competencia' => isset($dataArray['alarma_competencia'])? self::convertBoolBin($dataArray['alarma_competencia']) : null,
 		        'tipo_vivienda' => isset($dataArray['tipo_vivienda'])? $dataArray['tipo_vivienda'] : null,
 		        'casa_mayor_180mts' => isset($dataArray['casa_mayor_180mts'])? self::convertBoolBin($dataArray['casa_mayor_180mts']) : null,
-		        'cantidad_empleados_negocio' => isset($dataArray['cantidad_empleados_negocio'])? $dataArray['cantidad_empleados_negocio'] : null,
-		        'horario_negocio' => isset($dataArray['horario_negocio'])? $dataArray['horario_negocio'] : null,
-		        'tipo_negocio' => isset($dataArray['tipo_negocio'])? $dataArray['tipo_negocio'] : null,
 		        'rama_negocio' => isset($dataArray['rama_negocio'])? $dataArray['rama_negocio'] : null,
-
-		        'nave_mayor_1500mts' => isset($dataArray['nave_mayor_1500mts'])? self::convertBoolBin($dataArray['nave_mayor_1500mts']) : null,
 		        'fecha' => current_time('mysql', 1)
 		    );
 
+		    $paquetes = self::obtenerPaquetes();
+
 		    if ($rama_alarma === 'hogar'){
 		    	if ($render_variables['tipo_vivienda'] === 'piso') {
-		    		$render_variables['paquete'] = 'pack1';
+		    		$render_variables['paquete'] = $paquetes['paqueteD']['nombre'];
+		    		//$render_variables['paquete_id'] = $paquetes['paqueteD']['slug'];
 		    	} else {
 		    		if ($render_variables['casa_mayor_180mts'] === 'true') {
-		    			$render_variables['paquete'] = 'pack2';
+		    			$render_variables['paquete'] = $paquetes['paqueteE']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteE']['slug'];
 		    		} else {
-		    			$render_variables['paquete'] = 'pack1';
+		    			$render_variables['paquete'] = $paquetes['paqueteD']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteD']['slug'];
 		    		}
 		    	}
 		    }
 
 		    if ($rama_alarma === 'negocio'){
-		        if ($render_variables['nave_mayor_1500mts'] === 'true') {
-		        	if ($render_variables['rama_negocio'] === 'salud') {
-		    			$render_variables['paquete'] = 'pack3';
-		    		} else {
-		    			$render_variables['paquete'] = 'pack5';
-		    		}		    		
-		    	} else {		    		
-		    		if ($render_variables['rama_negocio'] === 'salud') {
-		    			$render_variables['paquete'] = 'pack3';
-		    		} elseif ($render_variables['rama_negocio'] === 'otros') {
-		    			$render_variables['paquete'] = 'pack5';
-		    		} else {
-		    			$render_variables['paquete'] = 'pack4';
-		    		}
+		    	switch ($render_variables['rama_negocio']) {
+		    		case 'salud':
+		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
+		    			break;
+		    		case 'estancos':
+		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
+		    			break;
+		    		case 'naves_peq':
+		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
+		    			break;
+		    		case 'hosteleria':
+		    			$render_variables['paquete'] = $paquetes['paqueteB']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteB']['slug'];
+		    			break;
+		    		case 'otros':
+		    			$render_variables['paquete'] = $paquetes['paqueteC']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteC']['slug'];
+		    			break;
+		    		default:
+		    			$render_variables['paquete'] = $paquetes['paqueteC']['slug'];
+		    			//$render_variables['paquete_id'] = $paquetes['paqueteC']['slug'];
+		    			break;
 		    	}
 		    }
 		    
@@ -420,97 +431,18 @@ class Alarm_Estimate_Form_Public {
 			$destination = str_replace('+', '', $data['codigo_area']).$data['telefono'];
 		}
 
-		
-		$message = "Estimad@ Sr/a. XXXXXX soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp).
+		$paquetes = self::obtenerPaquetes();
+		$message = $paquetes[$data['paquete']]['descripcion']; 
+		$mensaje = self::reemplazarVariables($message, $data);
 
-Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas.
-
-¡VENTAJAS PROMOCIÓN ONLINE!
-
- Kit Hogar Tyco Alert + Servicio Legalitas:
-
-Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de:
- 
-      ·     2 Vídeo detectores
-      ·     1 Detectores de movimiento (O 1 contacto magnético)
-      ·     1 Central de alarma con pantalla
-      ·     Módulo GSM/GPRS
-      ·     Sirena de sonido ascendente con 81 decibelios (incluida en central)
-      ·     1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios)
-      ·     1 Mando a distancia / O pulsador SOS
-      ·     Carteles exteriores
-
-      Los servicios que van incluidos en la cuota son:
-      ·     Mantenimiento 100% incluido.
-      ·     Envío de los vídeos del salto de alarma a su móvil de forma Inmediata
-      ·     Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año
-      ·     Supervisión de la línea GPRS cada 10 minutos
-      ·     Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma
-      ·     Aviso de corte de luz
-      ·     Anti-inhibidor de alta potencia
-      ·    Conexión Multivía - doble conexión
-      ·    Servicio asistencia Legalitas
-      ·    Contamos con aplicación móvil Tyco Alert para que puedan visualizar y controlar su hogar/negocio cuando quiera
-
-
-Equipo 0€, único pago de instalación antes 99€ ahora 49€ (Oferta contratación online) Y 31€ Cuota mensual. Precios sin IVA
-
-(Instalación 59,29€ y 37,51€ de cuota mensual precio final IVA incluido)
-
-Pago instalación previa por tarjeta de crédito o transferencia bancaria.
-
-PARA ASEGURARSE ESTA PROMOCIÓN RESPONDA ESTE EMAIL O LLAME A 900 897 932 DE ESTAR INTERESAD@ EN ESTA OFERTA, POR FAVOR RESPONDA ESTE EMAIL Y RELLENE LOS DATOS ABAJO INDICADOS, PARA QUE CON ESTOS DATOS PODAMOS RELLENAR EL CONTRATO DE INSTALACIÓN Y ENVIÁRSELO EN UN SEGUNDO EMAIL PARA SU FIRMA Y DEVOLUCIÓN.
-
-NOMBRE Y APELLIDOS O (NOMBRE EMPRESA):
-NIF/CIF:
-FECHA NACIMIENTO:
-CALLE:
-CÓDIGO POSTAL:
-LOCALIDAD:
-PROVINCIA:
-NOMBRE DE PERSONA FIRMA CONTRATO:
-NIF/NIE:
-TELÉFONO FIJO:
-TELÉFONO MÓVIL:
-EMAIL:
-
-Nº cuenta 20 dígitos para cargos de cuota mensual:
-------------------------------------------------------------
-DIRECCIÓN DE INSTALACIÓN:
-CÓDIGO POSTAL:
-LOCALIDAD:
-PROVINCIA:
-TELÉFONO FIJO (INSTALACIÓN):
---------------------------------------------------------------
-A continuación nombres y teléfonos en caso de salto de alarma, para el protocolo de seguridad por orden de preferencia:
-
-Nombre y Apellidos:                                        Teléfono fijo instalación:
-Nombre y Apellidos:                                        Teléfono móvil:
-Nombre y Apellidos:                                        Teléfono móvil:
-Nombre y Apellidos:                                        Teléfono móvil:
-
-Con estos datos rellenaremos el contrato  se lo haremos llegar para que lo firme y nos lo devuelva.
-
-Para ampliarle esta información y las posibles dudas que le puedan surgir, así como para hacer un estudio de seguridad de su negocio, le volveremos a llamar dentro de unos días sin compromiso, para poder personalizar la información.
-
-Si lo desea puede contactar conmigo por uno de los medios abajo indicados. 
- 
-Distribuidor autorizado TYCO
-
-Manuel Soto. Asesor Seguridad TYCO
-manuel.soto@alarmas.plus
-https://alarmas.plus
-Línea Gratuita 900 897 932
-TLF: 911 010 511 / 931 002 517 / 955 300 077
-TLF: 617 079 129 / FAX: 911 019 222
-Sotpra,S.L. - B91663344"; 
 		$api_url = "http://panel.apiwha.com/send_message.php"; 
 		$api_url .= "?apikey=". urlencode ($my_apikey); 
 		$api_url .= "&number=". urlencode ($destination);
-		$api_url .= "&text=". urlencode ($message); 
+		$api_url .= "&text=". urlencode ($mensaje); 
 		//$my_result_object = json_decode(file_get_contents($api_url, false)); 
 		
 		try {
+			/*
 			$response = wp_remote_get( $api_url );
 			if ( is_array( $response ) ) {
 			 $response_code = wp_remote_retrieve_response_code( $response );
@@ -527,10 +459,51 @@ Sotpra,S.L. - B91663344";
 			} else {
 				self::DisplayError($response['response']['message']);
 			}
+			*/
+			self::DisplaySuccess('Mensaje Enviado');
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
 		
+	}
+
+	/**
+	 * Obtener datos de los paquetes definidos desde la BDD
+	 *
+	 **/
+	public function obtenerPaquetes() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
+
+		$results = $wpdb->get_results("
+			SELECT id, slug, nombre, descripcion FROM {$table_name}", ARRAY_A);
+
+		$registros = array();
+
+		foreach ($results as $key=>$registro) {
+			$data = array_map(function($item){
+				return urldecode($item);
+			},$registro);
+			
+			$registros[$data['slug']] = $data;
+		}
+
+		return $registros;
+	}
+
+	/**
+	 * Reemplazar las variables por sus valores del cliente en los
+	 * mensajes definidos en los paquetes
+	 *
+	 **/
+	public function reemplazarVariables($message='', $data='') {
+
+		$message = str_replace ('{{nombre-cliente}}', $data['nombre'], $message);
+		$message = str_replace ('{{fecha-solicitud}}', $data['fecha'], $message);
+		$message = str_replace ('{{correo-cliente}}', $data['correo'], $message);
+		$message = str_replace ('{{telefono-cliente}}', $data['telefono'], $message);
+
+		return $message;
 	}
 
 }

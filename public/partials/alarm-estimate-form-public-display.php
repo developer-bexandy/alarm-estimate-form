@@ -18,7 +18,7 @@
 <div class="calculator__wrapper">
 
     <div class="calculator__tabs-wrapper ">
-        <div class="calculator__tab calculator__tab--active calculator__tab--first calculator__tab--triangle">
+        <div class="calculator__tab calculator__tab--first calculator__tab--triangle calculator__tab--active">
             <span class="tab__circle">1</span>
             <span class="tab__descr">Datos de la Vivienda</span>
         </div>
@@ -48,9 +48,9 @@
         </div>
     </div>
 
-    <div class="calculator__question calculator__question--hogar" style="display: block">
+    <div class="calculator__question calculator__question--hogar" >
         <form id="hogarForm">
-            <div class="question--horar" >
+            <div class="question--horar" style="display: block">
                 <p class="question-descr">¿Es una vivienda habitual o suele estar vacía?</p>
                 <div class="question">
                     <input type="checkbox" id="checkHabitual" name="residencia_habitual" value="true" class="checkbox-question-next"/>
@@ -60,6 +60,11 @@
                     <input type="checkbox" id="checkVacia" name="residencia_habitual" value="false" class="checkbox-question-next"/>
                     <label for="checkVacia">Vacía</label>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda">
+                        Tyco te ayuda a proteger tu vivienda contra el robo y a proteger tu segunda residencia contra los intentos de ocupación y robo.
+                    </span>
+                </div> 
             </div>
             
             <div class="question--horar">
@@ -72,6 +77,9 @@
                     <input type="checkbox" id="checkRejasNo" name="rejas" value="false" class="checkbox-question-next"/>
                     <label for="checkRejasNo">No</label>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Instalar rejas en una vivienda es siempre una buena opción y facilita la configuración del sistema de alarma.</span>
+                </div> 
             </div>
 
             <div class="question--horar">
@@ -84,18 +92,9 @@
                     <input type="checkbox" id="checkInternetNo" name="internet" value="false" class="checkbox-question-next"/>
                     <label for="checkInternetNo">No</label>
                 </div>
-            </div>
-
-            <div class="question--horar">
-                <p class="question-descr">¿Han robado alguna vez o cerca suya?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkRobabadoAlgunaSi" name="historial_robos" value="true" class="checkbox-question-next"/>
-                    <label for="checkRobabadoAlgunaSi">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkRobabadoAlgunaNo" name="historial_robos" value="false" class="checkbox-question-next"/>
-                    <label for="checkRobabadoAlgunaNo">No</label>
-                </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Si tienes Internet en tu domicilio Tyco realizará la conexión mediante cable al router, lo que se denomina conexión multivía, no es necesario pero si se puede optar por esa opción es un plus de seguridad para tu alarma.</span>
+                </div> 
             </div>
 
             <div class="question--horar">
@@ -107,6 +106,9 @@
                 <div class="question">
                     <input type="checkbox" id="checkAlarmaNo" name="alarma_competencia" value="false" class="checkbox-question-next"/>
                     <label for="checkAlarmaNo">No</label>
+                </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Te asesoramos en el proceso de baja con tu empresa actual para que no tengas problemas a la hora de gestionar el trámite de baja.</span>
                 </div>
             </div>
 
@@ -149,7 +151,7 @@
                     <div class="question__button" id="request_verification">Verificar</div>
                 </div>
                 <div class="center_text">
-                    <span class="request_leyenda"><?php esc_attr_e( 'Nos pondremos en contacto con usted en el número de arriba con un código de verificación', 'alarm-estimate-form' ) ?></span>
+                    <span class="request_leyenda">Te mandaremos un código a tu teléfono móvil para confirmar que es un número correcto, te mandaremos tu precio de oferta cerrado al mismo número mediante un mensaje de Whatsapp. Al realizar ésta acción aceptas la comunicación con alarmas.plus a través de éste medio.</span>
                 </div>                
             </div>      
 
@@ -219,59 +221,8 @@
 
     <div class="calculator__question calculator__question--negocio">
         <form id="negocioForm">
+            
             <div class="question--negocio" style="display: block">
-                <p class="question-descr">¿Cuantos empleados tiene habitualmente el negocio?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkSolo" name="cantidad_empleados_negocio" value="solo yo" class="checkbox-question-next"/>
-                    <label for="checkSolo">Solo estoy yo</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkEmpleados2" name="cantidad_empleados_negocio" value="2 a 4" class="checkbox-question-next"/>
-                    <label for="checkEmpleados2">De 2 a 4 empleados</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkEmpleados4" name="cantidad_empleados_negocio" value="mas de 4" class="checkbox-question-next"/>
-                    <label for="checkEmpleados4">Más de 4 empleados‎</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">¿Cuando esta abierto su negocio?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkPorLaManana" name="horario_negocio" value="mañana" class="checkbox-question-next"/>
-                    <label for="checkPorLaManana">Por la mañana</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkPorLaTarde" name="horario_negocio" value="tarde" class="checkbox-question-next"/>
-                    <label for="checkPorLaTarde">Por la tarde</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkMañanaYTarde‎" name="horario_negocio" value="mañana y tarde" class="checkbox-question-next"/>
-                    <label for="checkMañanaYTarde‎">Mañana y tarde‎‎</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkPorlanoche‎" name="horario_negocio" value="noche" class="checkbox-question-next"/>
-                    <label for="checkPorlanoche‎">Por la noche‎‎</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkLas24hHoras‎" name="horario_negocio" value="24 horas" class="checkbox-question-next"/>
-                    <label for="checkLas24hHoras‎">Las 24 horas‎‎</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">¿Han robado con anterioridad en su negocio o a negocios cercanos?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkHanRobadoSi" name="historial_robos" value="true" class="checkbox-question-next"/>
-                    <label for="checkHanRobadoSi">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkcheckHanRobadoNo" name="historial_robos" value="false" class="checkbox-question-next"/>
-                    <label for="checkcheckHanRobadoNo">No</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
                 <p class="question-descr">¿Tienes internet en el negocio?</p>
                 <div class="question">
                     <input type="checkbox" id="checkInternetNegocioSi" name="internet" value="true" class="checkbox-question-next"/>
@@ -281,6 +232,9 @@
                     <input type="checkbox" id="checkInternetNegocioNo" name="internet" value="false" class="checkbox-question-next"/>
                     <label for="checkInternetNegocioNo">No</label>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Si tienes Internet en tu negocio Tyco realizará la conexión mediante cable al router, lo que se denomina conexión multivía, no es necesario pero si se puede optar por esa opción es un plus de seguridad para tu alarma.</span>
+                </div> 
             </div>
                 
             <div class="question--negocio">
@@ -293,6 +247,9 @@
                     <input type="checkbox" id="checkTieneNegocioNo" name="rejas" value="false" class="checkbox-question-next"/>
                     <label for="checkTieneNegocioNo">No</label>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Instalar rejas o persianas de seguridad en un negocio es siempre una buena opción y facilita la configuración del sistema de alarma.</span>
+                </div> 
             </div>
 
             <div class="question--negocio">
@@ -305,50 +262,28 @@
                     <input type="checkbox" id="checkAlarmaNoNegocio" name="alarma_competencia" value="false" class="checkbox-question-next"/>
                     <label for="checkAlarmaNoNegocio">No</label>
                 </div>
+                <div class="center_text">
+                    <span class="request_leyenda">Te asesoramos en el proceso de baja con tu empresa actual para que no tengas problemas a la hora de gestionar el trámite de baja.</span>
+                </div>
             </div>
             
             <!-------------------tab2--------------------->
             
             <div class="question--negocio">
-                <p class="question-descr">¿El propietario del negocio es una empresa o un autonomo?</p>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioEmpresa" name="tipo_negocio" value="empresa" class="checkbox-question-next"/>
-                    <label for="checkNegocioEmpresa">Empresa</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioAutonomo" name="tipo_negocio" value="autonomo" class="checkbox-question-next"/>
-                    <label for="checkNegocioAutonomo">Autónomo</label>
-                </div>
-            </div>
-
-            <div class="question--negocio">
                 <p class="question-descr">Seleccione el tipo de negocio</p>
                 <div class="question">
                     <input type="checkbox" id="checkNegocioEmpresa" name="checkNegocioEmpresa" class="checkbox-question-next"/>
                     <select id="selectTipoNegocio" name="rama_negocio" class="checkbox-question-next">
-                        <option value="salud">Salud</option>
-                        <option value="hosteleria">Hosteleria</option>
-                        <option value="peluqueria">Peluquería</option>                        
-                        <option value="informatica">Tienda Informática</option>
-                        <option value="gimnasio">Gimnasio</option>
-                        <option value="colegio">Colegio</option>
-                        <option value="bazar">Bazar</option>
-                        <option value="alimentacion">Alimentación</option>
-                        <option value="otros" selected="selected">Resto de Negocios</option>
+                        <option value="no_option" selected="selected">Seleccione una opción</option>
+                        <option value="salud">Sector Salud</option>
+                        <option value="estancos">Estancos</option>
+                        <option value="naves_peq">Naves de menos de 1500 metros</option>
+                        <option value="hosteleria">Hostelería</option>
+                        <option value="otros">Resto de Negocios</option>
                     </select>
-                    <label for="selectTipoNegocio">Oferta válida para negocios de grado 2 de seguridad. No válido para negocios grado 3 joyerías, armerías, compro oro, etc</label>
                 </div>
-            </div>
-
-            <div class="question--negocio">
-                <p class="question-descr">¿Es una nave de más de 1500 metros cuadrados? </p>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioMas1500" name="nave_mayor_1500mts" value="true" class="checkbox-question-next"/>
-                    <label for="checkNegocioMas1500">Si</label>
-                </div>
-                <div class="question">
-                    <input type="checkbox" id="checkNegocioMenos1500" name="nave_mayor_1500mts" value="false" class="checkbox-question-next"/>
-                    <label for="checkNegocioMenos1500">No</label>
+                <div class="center_text">
+                    <span class="request_leyenda">Oferta válida para negocios de grado 2 de seguridad. No válido para negocios grado 3 joyerías, armerías, compro oro, etc.</span>
                 </div>
             </div>
 
@@ -367,8 +302,8 @@
                     <div class="question__button" id="request_verification_business">Verificar</div>
                 </div>
                 <div class="center_text">
-                    <span class="request_leyenda"><?php esc_attr_e( 'Nos pondremos en contacto con usted en el número de arriba con un código de verificación', 'alarm-estimate-form' ) ?></span>
-                </div>                
+                    <span class="request_leyenda">Te mandaremos un código a tu teléfono móvil para confirmar que es un número correcto, te mandaremos tu precio de oferta cerrado al mismo número mediante un mensaje de Whatsapp. Al realizar ésta acción aceptas la comunicación con alarmas.plus a través de éste medio.</span>
+                </div>                 
             </div>      
 
             <div class="question--negocio">

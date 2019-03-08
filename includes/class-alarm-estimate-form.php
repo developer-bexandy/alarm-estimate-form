@@ -170,6 +170,17 @@ class Alarm_Estimate_Form {
 		$this->loader->add_action( 'wp_ajax_get_data_table', $plugin_admin, 'get_alarma_data_table' );
 		$this->loader->add_action( 'wp_ajax_nopriv_get_data_table', $plugin_admin, 'get_alarma_data_table' );
 
+		// Agregar submenú de Definición de Paquetes
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'setting_package_submenu_page' );
+
+		// Obtener datos para rellenar Formulario de Paquetes
+		$this->loader->add_action( 'wp_ajax_get_package_form_data', $plugin_admin, 'get_package_form_data' );
+		$this->loader->add_action( 'wp_ajax_nopriv_get_package_form_data', $plugin_admin, 'get_package_form_data' );
+
+		// Añadir funciones listener para llamado ajax con action = 'alarm_estimate_form_submit'
+		$this->loader->add_action( 'wp_ajax_save_package_form', $plugin_admin, 'save_package_form' );
+		$this->loader->add_action( 'wp_ajax_nopriv_save_package_form', $plugin_admin, 'save_package_form' );
+
 	}
 
 	/**

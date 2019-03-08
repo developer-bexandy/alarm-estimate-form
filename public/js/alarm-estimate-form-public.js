@@ -36,8 +36,6 @@
         var divNegocio = $('.calculator__question--negocio');
         var divFirstQuestion = $('.calculator__question--first');
         var allQuestionsCheckboxes = $('.calculator__question--hogar input[type=checkbox].checkbox-question-next, .calculator__question--negocio input[type=checkbox].checkbox-question-next');
-        var questionButtonVivienda = $('#questionButtontVivienda, #postalNegocioButton');
-        var questionInputVivienda = $('#questionInputVivienda, #postalNegocioInput');
         var requestVerification = $('#request_verification');
         var mensajeVerificarCode = $('#desc_verify_token');
         var verificationCode = $('#verification_code');
@@ -46,7 +44,7 @@
         var tab3 = $('.calculator__tab--third');
         var checkTab2Hogar = $('#checkAlarmaSi, #checkAlarmaNo');
         var checkTab2Negocio = $('#checkAlarmaSiNegocio, #checkAlarmaNoNegocio');
-        var checkTab3Negocio = $('#checkNegocioMas1500, #checkNegocioMenos1500');
+        var checkTab3Negocio = $('#selectTipoNegocio');
         var checkTab3Hogar = $('#checkPiso, #checkMas180, #checkMenos180');
         var CalculaHogar = $('#tab3HorarCalcula');
         var CalculaNegocio = $('#tab3NegocioCalcula');
@@ -95,37 +93,6 @@
             },300 );
         });
 
-        $('#questionButtontVivienda').on("click", function () {
-            var questionInputVivienda = $('#questionInputVivienda');
-            var inputValue = questionInputVivienda.val();
-            if (isValidZipCode(inputValue)) {
-                var self = this;
-                setTimeout(function () {
-                    $(self).parent().parent().fadeOut('slow', function () {
-                        $(self).parent().parent().next().fadeIn();
-                    });
-                },300 );
-            } else {
-                questionInputVivienda.css('border-color','red');
-                questionInputVivienda.focus();
-            }
-        });
-
-        $('#postalNegocioButton').on("click", function () {
-            var questionInputVivienda = $('#postalNegocioInput');
-            var inputValue = questionInputVivienda.val();
-            if (isValidZipCode(inputValue)) {
-                var self = this;
-                setTimeout(function () {
-                    $(self).parent().parent().fadeOut('slow', function () {
-                        $(self).parent().parent().next().fadeIn();
-                    });
-                },300 );
-            } else {
-                questionInputVivienda.css('border-color','red');
-                questionInputVivienda.focus();
-            }
-        });
 
         checkTab2Hogar.on('click', function () {
             tab1.removeClass('calculator__tab--active');
@@ -139,10 +106,19 @@
             tab2.addClass('calculator__tab--active');
         });
 
-        checkTab3Negocio.on('click', function () {
+        checkTab3Negocio.on('change', function () {
             tab2.removeClass('calculator__tab--active');
             tab2.addClass('calculator__tab--done');
             tab3.addClass('calculator__tab--active');
+        });
+
+        $('#selectTipoNegocio').on('change', function () {
+            var self = this;
+            setTimeout(function () {
+                $(self).parent().parent().fadeOut('slow', function () {
+                    $(self).parent().parent().next().fadeIn();
+                });
+            },300 );
         });
 
         checkTab3Hogar.on('click', function () {
@@ -157,7 +133,7 @@
                 action: 'alarm_estimate_form_submit',
                 nonce_code: alarm_estimate_form_ajax_obj.nonce,
                 data: data_object,
-                rama_alarma: $('#questionFirst').find('input[name="rama_alarma"]').val()
+                rama_alarma: id
 
             };
 
@@ -656,15 +632,6 @@
                     })
                 })
             });
-        });
-
-        $('#selectTipoNegocio').on('change', function () {
-            var self = this;
-            setTimeout(function () {
-                $(self).parent().parent().fadeOut('slow', function () {
-                    $(self).parent().parent().next().fadeIn();
-                });
-            },300 );
         });
 
         CalculaNegocio.on('click', function () {
