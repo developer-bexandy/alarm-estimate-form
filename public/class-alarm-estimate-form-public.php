@@ -214,7 +214,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+			
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
 
@@ -223,8 +223,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }		
-			*/
-			self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
+			
+			//self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -251,7 +251,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			/*
+			
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationCheck($phone_number, $country_code, $verification_code);
 			if ($response->ok()) {
@@ -259,8 +259,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            */
-            self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
+            
+            //self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -442,7 +442,7 @@ class Alarm_Estimate_Form_Public {
 		//$my_result_object = json_decode(file_get_contents($api_url, false)); 
 		
 		try {
-			/*
+			
 			$response = wp_remote_get( $api_url );
 			if ( is_array( $response ) ) {
 			 $response_code = wp_remote_retrieve_response_code( $response );
@@ -459,8 +459,8 @@ class Alarm_Estimate_Form_Public {
 			} else {
 				self::DisplayError($response['response']['message']);
 			}
-			*/
-			self::DisplaySuccess('Mensaje Enviado');
+			
+			//self::DisplaySuccess('Mensaje Enviado');
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
