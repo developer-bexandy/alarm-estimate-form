@@ -134,23 +134,32 @@
                 nonce_code: alarm_estimate_form_ajax_obj.nonce,
                 data: data_object,
                 rama_alarma: id
-
             };
-
             CalculaNegocio.text('Solicitud de envío ...');
             CalculaHogar.text('Solicitud de envío ...');
-            $.post( alarm_estimate_form_ajax_obj.ajax_url, data, function(response) {
-               CalculaHogar.text('Solicitud enviada');
-               CalculaNegocio.text('Solicitud enviada');
-               alertSuccess('Solicitud enviada!');
-               alert('Solicitud enviada!');
-              //  document.location.href = 'https://alarmas.plus/respuesta-calcula/';
-               setTimeout(function(){
-                document.location.href = '/';
-                   //CalculaHogar.text('Calcula tu precio ya');
-                   //CalculaNegocio.text('Calcula tu precio ya');
-               },3500);
-
+            $.post( alarm_estimate_form_ajax_obj.ajax_url, 
+                data, 
+                function(response) {
+                    if (response.success) {
+                        CalculaHogar.text('Solicitud enviada');
+                        CalculaNegocio.text('Solicitud enviada');
+                        alertSuccess('Solicitud enviada!');
+                        alert('Solicitud enviada!');
+                        setTimeout(function(){
+                            document.location.href = '/';
+                        },3500);
+                    } else {
+                        alertError( 'Error: '+response.data.message );
+                    }
+                }
+            )
+            .fail(function(xhr, textStatus, error) {
+                console.log(xhr.statusText);
+                alert(xhr.statusText);
+                console.log(textStatus);
+                alert(textStatus);
+                console.log(error);
+                alert(error);
             });
         }
 
@@ -184,14 +193,10 @@
                     data: data_object
                 };
                 alertSuccess('Procesando!');
-                //$('#waiting').addClass("loading");
-                //$('#waiting').show();
                 $.post( 
                     alarm_estimate_form_ajax_obj.ajax_url, 
                     data, 
                     function(response) {
-                        //$('#waiting').removeClass("loading");
-                        //$('#waiting').hide();
                         if (response.success) {
                             alertSuccess('Código de verificación enviado!');
                             mensajeVerificarCode[0].innerHTML = "Por favor, escriba el código de verificación enviado a <" +response.data.phone_number +">"
@@ -215,10 +220,15 @@
                         } else {
                             alertError( 'Error: '+response.data.message );
                         }
-                        
-                })
-                .fail(function(response) {
-                    alert( "error" );
+                    }
+                )
+                .fail(function(xhr, textStatus, error) {
+                    console.log(xhr.statusText);
+                    alert(xhr.statusText);
+                    console.log(textStatus);
+                    alert(textStatus);
+                    console.log(error);
+                    alert(error);
                 });
             } else {
                 alertError('Formato no válido!');                
@@ -258,10 +268,15 @@
                         } else {
                             alertError( 'Error: '+response.data.message );
                         }
-                        
-                })
-                .fail(function(response) {
-                    alert( "error" );
+                    }
+                )
+                .fail(function(xhr, textStatus, error) {
+                    console.log(xhr.statusText);
+                    alert(xhr.statusText);
+                    console.log(textStatus);
+                    alert(textStatus);
+                    console.log(error);
+                    alert(error);
                 });
             } else {
                 alertError('Formato no válido!');                
@@ -312,11 +327,16 @@
                     } else {
                         alertError('Error: '+response.data.message);
                     }
-                    
-                })
-                .fail(function(response) {
-                alert( "error" );
-              });
+                }
+            )
+            .fail(function(xhr, textStatus, error) {
+                console.log(xhr.statusText);
+                alert(xhr.statusText);
+                console.log(textStatus);
+                alert(textStatus);
+                console.log(error);
+                alert(error);
+            });
         });
 
         $('#change_via').on('click', function () {
@@ -366,17 +386,21 @@
                     } else {
                         alertError('Error: '+response.data.message);
                     }
-                    
-                })
-                .fail(function(response) {
-                alert( "error" );
-              });
+                }
+            )
+            .fail(function(xhr, textStatus, error) {
+                console.log(xhr.statusText);
+                alert(xhr.statusText);
+                console.log(textStatus);
+                alert(textStatus);
+                console.log(error);
+                alert(error);
+            });
         });
 
         $('#verification-change-link').on('click', function () {
             var self = this;
             $('#phone_number').val('');
-
             setTimeout(function () {
                 $(self).parent().parent().parent().parent().parent().fadeOut('slow', function () {
                     requestVerification.parent().parent().fadeIn(400, function() {
@@ -461,11 +485,16 @@
                             },300 );
                         } else {
                             alert( 'Error: '+response.data.message );
-                        }
-                        
-                })
-                .fail(function(response) {
-                    alert( "error" );
+                        }      
+                    }
+                )
+                .fail(function(xhr, textStatus, error) {
+                    console.log(xhr.statusText);
+                    alert(xhr.statusText);
+                    console.log(textStatus);
+                    alert(textStatus);
+                    console.log(error);
+                    alert(error);
                 });
             } else {
                 alertError('Formato no válido!');                
@@ -502,11 +531,16 @@
                             },300 );
                         } else {
                             alertError( 'Error: '+response.data.message );
-                        }
-                        
-                })
-                .fail(function(response) {
-                    alert( "error" );
+                        }      
+                    }
+                )
+                .fail(function(xhr, textStatus, error) {
+                    console.log(xhr.statusText);
+                    alert(xhr.statusText);
+                    console.log(textStatus);
+                    alert(textStatus);
+                    console.log(error);
+                    alert(error);
                 });
             } else {
                 alertError('Formato no válido!');                
@@ -556,12 +590,17 @@
                         },300 );
                     } else {
                         alertError('Error: '+response.data.message);
-                    }
-                    
-                })
-                .fail(function(response) {
-                alert( "error" );
-              });
+                    } 
+                }
+            )
+            .fail(function(xhr, textStatus, error) {
+                console.log(xhr.statusText);
+                alert(xhr.statusText);
+                console.log(textStatus);
+                alert(textStatus);
+                console.log(error);
+                alert(error);
+            });
         });
 
         $('#change_via_business').on('click', function () {
@@ -610,12 +649,17 @@
                         },300 );
                     } else {
                         alertError('Error: '+response.data.message);
-                    }
-                    
-                })
-                .fail(function(response) {
-                alert( "error" );
-              });
+                    }   
+                }
+            )
+            .fail(function(xhr, textStatus, error) {
+                console.log(xhr.statusText);
+                alert(xhr.statusText);
+                console.log(textStatus);
+                alert(textStatus);
+                console.log(error);
+                alert(error);
+            });
         });
 
         $('#verification-change-link_business').on('click', function () {

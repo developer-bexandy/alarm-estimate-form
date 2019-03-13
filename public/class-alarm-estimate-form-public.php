@@ -111,9 +111,11 @@ class Alarm_Estimate_Form_Public {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/alarm-estimate-form-public.js', array( 'jquery' ), $this->version, false );
 		$title_nonce = wp_create_nonce('alarm_estimate_form');
+
 	    wp_localize_script('jquery', 'alarm_estimate_form_ajax_obj', array(
 	        'ajax_url' => admin_url( 'admin-ajax.php' ),
 	        'nonce'    => $title_nonce,
+
 	    ));
 
 	    wp_enqueue_script( 'popper_js', 
@@ -306,15 +308,12 @@ class Alarm_Estimate_Form_Public {
 
 		    if ($rama_alarma === 'hogar'){
 		    	if ($render_variables['tipo_vivienda'] === 'piso') {
-		    		$render_variables['paquete'] = $paquetes['paqueteD']['nombre'];
-		    		//$render_variables['paquete_id'] = $paquetes['paqueteD']['slug'];
+		    		$render_variables['paquete'] = $paquetes['paqueteD']['slug'];
 		    	} else {
 		    		if ($render_variables['casa_mayor_180mts'] === 'true') {
 		    			$render_variables['paquete'] = $paquetes['paqueteE']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteE']['slug'];
 		    		} else {
 		    			$render_variables['paquete'] = $paquetes['paqueteD']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteD']['slug'];
 		    		}
 		    	}
 		    }
@@ -323,27 +322,21 @@ class Alarm_Estimate_Form_Public {
 		    	switch ($render_variables['rama_negocio']) {
 		    		case 'salud':
 		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
 		    			break;
 		    		case 'estancos':
 		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
 		    			break;
 		    		case 'naves_peq':
 		    			$render_variables['paquete'] = $paquetes['paqueteA']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteA']['slug'];
 		    			break;
 		    		case 'hosteleria':
 		    			$render_variables['paquete'] = $paquetes['paqueteB']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteB']['slug'];
 		    			break;
 		    		case 'otros':
 		    			$render_variables['paquete'] = $paquetes['paqueteC']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteC']['slug'];
 		    			break;
 		    		default:
 		    			$render_variables['paquete'] = $paquetes['paqueteC']['slug'];
-		    			//$render_variables['paquete_id'] = $paquetes['paqueteC']['slug'];
 		    			break;
 		    	}
 		    }
@@ -445,8 +438,8 @@ class Alarm_Estimate_Form_Public {
 			
 			$response = wp_remote_get( $api_url );
 			if ( is_array( $response ) ) {
-			 $response_code = wp_remote_retrieve_response_code( $response );
-			  $body = json_decode( wp_remote_retrieve_body( $response ), true );
+			 	$response_code = wp_remote_retrieve_response_code( $response );
+				$body = json_decode( wp_remote_retrieve_body( $response ), true );
 			}
 
 			if ($response_code === 200) {
@@ -457,7 +450,16 @@ class Alarm_Estimate_Form_Public {
 				}
 								
 			} else {
-				self::DisplayError($response['response']['message']);
+				if (is_wp_error( $response )){
+					self::DisplayError($response->get_error_message());
+				} else {
+					if (is_array( $response )) {
+						self::DisplayError($response['response']['message']);
+					} else {
+						self::DisplayError('Error Desconocido !');
+					}				
+				}
+				
 			}
 			
 			//self::DisplaySuccess('Mensaje Enviado');
