@@ -216,7 +216,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			
+			/*
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
 
@@ -225,8 +225,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }		
-			
-			//self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
+			*/
+			self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -253,7 +253,7 @@ class Alarm_Estimate_Form_Public {
 		}
 
 		try {
-			
+			/*
 			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
 			$response = $authy_api->phoneVerificationCheck($phone_number, $country_code, $verification_code);
 			if ($response->ok()) {
@@ -261,8 +261,8 @@ class Alarm_Estimate_Form_Public {
             } else {
                 self::DisplayError($response->errors()->message);
             }	
-            
-            //self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
+            */
+            self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
@@ -310,7 +310,7 @@ class Alarm_Estimate_Form_Public {
 		    	if ($render_variables['tipo_vivienda'] === 'piso') {
 		    		$render_variables['paquete'] = $paquetes['paqueteD']['slug'];
 		    	} else {
-		    		if ($render_variables['casa_mayor_180mts'] === 'true') {
+		    		if ($render_variables['casa_mayor_180mts'] === '1') {
 		    			$render_variables['paquete'] = $paquetes['paqueteE']['slug'];
 		    		} else {
 		    			$render_variables['paquete'] = $paquetes['paqueteD']['slug'];
