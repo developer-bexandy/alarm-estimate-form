@@ -32,6 +32,7 @@ class Alarm_Estimate_Form_Activator {
 	public static function activate() {
 		self::alarm_estimate_form_table();
 		self::alarm_estimate_form_paquete_table();
+		//self::alter_paquete_table();
 	}
 
 	function alarm_estimate_form_table() {
@@ -78,11 +79,31 @@ class Alarm_Estimate_Form_Activator {
 	 		`slug` VARCHAR(40) NOT NULL,
 	 		`nombre` VARCHAR(40) DEFAULT NULL,
 	 		`descripcion` TEXT DEFAULT NULL,
+	 		`img_filename` VARCHAR(100) DEFAULT NULL,
+	 		`img_url` VARCHAR(100) DEFAULT NULL,
+	 		`img_type` VARCHAR(20) DEFAULT NULL,
 	 		PRIMARY KEY(id),
 	 		UNIQUE(slug)
 	 	) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 	 	";
 	 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+	 		require_once(ABSPATH . "wp-admin/includes/upgrade.php");
+	 		dbDelta($sql);
+	 	}
+	}
+
+	function alter_paquete_table() {
+		global $wpdb;
+	 	$charset_collate = $wpdb->get_charset_collate();
+	 	$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
+	 	$sql = "ALTER TABLE `$table_name` 
+	 			ADD COLUM `img_filename` VARCHAR(255) DEFAULT NULL,
+	 			ADD COLUM `img_url` VARCHAR(255) DEFAULT NULL,
+	 			ADD COLUM `img_type` VARCHAR(20) DEFAULT NULL;";
+	 	require_once(ABSPATH . "wp-admin/includes/upgrade.php");
+	 		dbDelta($sql);
+
+	 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
 	 		require_once(ABSPATH . "wp-admin/includes/upgrade.php");
 	 		dbDelta($sql);
 	 	}

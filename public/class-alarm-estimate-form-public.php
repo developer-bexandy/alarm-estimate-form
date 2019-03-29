@@ -426,45 +426,117 @@ class Alarm_Estimate_Form_Public {
 
 		$paquetes = self::obtenerPaquetes();
 		$message = $paquetes[$data['paquete']]['descripcion']; 
+		$image = $paquetes[$data['paquete']]['img_url']; 
 		$mensaje = self::reemplazarVariables($message, $data);
 
-		$api_url = "http://panel.apiwha.com/send_message.php"; 
-		$api_url .= "?apikey=". urlencode ($my_apikey); 
-		$api_url .= "&number=". urlencode ($destination);
-		$api_url .= "&text=". urlencode ($mensaje); 
-		//$my_result_object = json_decode(file_get_contents($api_url, false)); 
-		
-		try {
-			
-			$response = wp_remote_get( $api_url );
-			if ( is_array( $response ) ) {
-			 	$response_code = wp_remote_retrieve_response_code( $response );
-				$body = json_decode( wp_remote_retrieve_body( $response ), true );
-			}
+		$error = false;
+		$success_message = "";
+		$error_message = "";
 
-			if ($response_code === 200) {
-				if ($body['success']) {
-					self::DisplaySuccess($body['description']);
-				} else {
-					self::DisplayError($body['description']);
+		if (!is_null($mensaje)) {
+			$api_url = "http://panel.apiwha.com/send_message.php"; 
+			$api_url .= "?apikey=". urlencode ($my_apikey); 
+			$api_url .= "&number=". urlencode ($destination);
+			$api_url .= "&text=". urlencode ($mensaje); 
+
+			try {
+			
+				$response = wp_remote_get( $api_url );
+	
+				if ( is_array( $response ) ) {
+					 $response_code = wp_remote_retrieve_response_code( $response );
+					$body = json_decode( wp_remote_retrieve_body( $response ), true );
 				}
-								
-			} else {
-				if (is_wp_error( $response )){
-					self::DisplayError($response->get_error_message());
-				} else {
-					if (is_array( $response )) {
-						self::DisplayError($response['response']['message']);
+	
+				if ($response_code === 200) {
+					if ($body['success']) {
+						$success_message .= $body['description'].' ';					
 					} else {
-						self::DisplayError('Error Desconocido !');
-					}				
+						$error = true;
+						$error_message .= $body['description'].' ';
+					}
+									
+				} else {
+					if (is_wp_error( $response )){
+						$error = true;
+						$error_message .= $response->get_error_message().' ';
+					} else {
+						if (is_array( $response )) {
+							$error = true;
+							$error_message .= $response['response']['message'].' ';
+						} else {
+							$error = true;
+							$error_message .= 'Error Desconocido !'.' ';
+						}				
+					}
+					
 				}
 				
+				//self::DisplaySuccess('Mensaje Enviado');
+			} catch (Exception $e) {
+				$error = true;
+				$error_message .= $e->getMessage().' ';
 			}
 			
-			//self::DisplaySuccess('Mensaje Enviado');
-		} catch (Exception $e) {
-			self::DisplayError( $e->getMessage() );
+		}
+		
+		if (!is_null($image)) {
+			$api_url = "http://panel.apiwha.com/send_message.php"; 
+			$api_url .= "?apikey=". urlencode ($my_apikey); 
+			$api_url .= "&number=". urlencode ($destination);
+			$api_url .= "&text=". urlencode ($image); 
+
+			try {
+			
+				$response = wp_remote_get( $api_url );
+	
+				if ( is_array( $response ) ) {
+					$response_code = wp_remote_retrieve_response_code( $response );
+					$body = json_decode( wp_remote_retrieve_body( $response ), true );
+				}
+	
+				if ($response_code === 200) {
+					if ($body['success']) {
+						$success_message .= $body['description'].' ';					
+					} else {
+						$error = true;
+						$error_message .= $body['description'].' ';
+					}
+									
+				} else {
+					if (is_wp_error( $response )){
+						$error = true;
+						$error_message .= $response->get_error_message().' ';
+					} else {
+						if (is_array( $response )) {
+							$error = true;
+							$error_message .= $response['response']['message'].' ';
+						} else {
+							$error = true;
+							$error_message .= 'Error Desconocido !'.' ';
+						}				
+					}
+					
+				}
+				
+				//self::DisplaySuccess('Mensaje Enviado');
+			} catch (Exception $e) {
+				$error = true;
+				$error_message .= $e->getMessage().' ';
+			}
+		}
+
+		if (is_null($mensaje) && is_null($image)) {
+			$error = true;
+			$error_message .= "El paquete no tiene mensajes de whatsapp configurados!!";
+		}
+		
+		
+		
+		if (!$error) {
+			self::DisplaySuccess($success_message);
+		} else {
+			self::DisplayError($error_message);
 		}
 		
 	}
@@ -478,7 +550,7 @@ class Alarm_Estimate_Form_Public {
 		$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
 
 		$results = $wpdb->get_results("
-			SELECT id, slug, nombre, descripcion FROM {$table_name}", ARRAY_A);
+			SELECT id, slug, nombre, descripcion, img_filename, img_url, img_type FROM {$table_name}", ARRAY_A);
 
 		$registros = array();
 

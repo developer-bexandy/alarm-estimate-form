@@ -393,9 +393,14 @@ class Alarm_Estimate_Form_Admin {
 
 
 		if( isset( $_POST['package_form_nonce'] ) && wp_verify_nonce( $_POST['package_form_nonce'], 'package_form_nonce_code') ) {
+
+			$posted_data = isset($_POST) ? $_POST : array();
+			$file_data = isset($_FILES) ? $_FILES : array();
+			$data = array_merge($posted_data, $file_data);
+			$response = array();
 			// sanitize the input
-			$data = $_POST['datos'] ? $_POST['datos'] : '';
-			parse_str($data, $dataArray);
+			//$data = $_POST['datos'] ? $_POST['datos'] : '';
+			parse_str($data['datos'], $dataArray);
 			$nombrePaqueteA = sanitize_text_field( $dataArray['nombrePaqueteA'] );
 			$descripcionPaqueteA = urlencode ($dataArray['descripcionPaqueteA']);
 			$nombrePaqueteB = sanitize_text_field( $dataArray['nombrePaqueteB'] );
@@ -407,51 +412,113 @@ class Alarm_Estimate_Form_Admin {
 			$nombrePaqueteE = sanitize_text_field( $dataArray['nombrePaqueteE'] );
 			$descripcionPaqueteE = urlencode ($dataArray['descripcionPaqueteE']);
 
+			$adjunto = array();
+			for ($i=0; $i < 5; $i++) { 
+				$paqueteID = 'imgPaquete'.['A','B','C','D','E'][$i];
+
+				$uploaded_file = wp_handle_upload($data[$paqueteID], array('test_form' => false));				
+
+				if ($uploaded_file && !isset($uploaded_file['error'])) {
+					$adjunto[$paqueteID]['filename'] = basename($uploaded_file['url']);
+					$adjunto[$paqueteID]['url'] = $uploaded_file['url'];
+					$adjunto[$paqueteID]['type'] = $uploaded_file['type'];
+				} else {
+					$adjunto[$paqueteID]['filename'] = null;
+					$adjunto[$paqueteID]['url'] = null;
+					$adjunto[$paqueteID]['type'] = null;
+				}
+			}
+
 			$variables = array (
 				'1' => array (
 					'slug' => 'paqueteA',
 		        	'nombre' => $nombrePaqueteA,
-		        	'descripcion' => $descripcionPaqueteA
+		        	'descripcion' => $descripcionPaqueteA,
+		        	'img_filename' => $adjunto['imgPaqueteA']['filename'],
+		        	'img_url' => $adjunto['imgPaqueteA']['url'],
+		        	'img_type' => $adjunto['imgPaqueteA']['type']
 				),
 				'2' => array (
 					'slug' => 'paqueteB',
 		        	'nombre' => $nombrePaqueteB,
-		        	'descripcion' => $descripcionPaqueteB
+		        	'descripcion' => $descripcionPaqueteB,
+		        	'img_filename' => $adjunto['imgPaqueteB']['filename'],
+		        	'img_url' => $adjunto['imgPaqueteB']['url'],
+		        	'img_type' => $adjunto['imgPaqueteB']['type']
 				),
 				'3' => array (
 					'slug' => 'paqueteC',
 		        	'nombre' => $nombrePaqueteC,
-		        	'descripcion' => $descripcionPaqueteC
+		        	'descripcion' => $descripcionPaqueteC,
+		        	'img_filename' => $adjunto['imgPaqueteC']['filename'],
+		        	'img_url' => $adjunto['imgPaqueteC']['url'],
+		        	'img_type' => $adjunto['imgPaqueteC']['type']
 				),
 				'4' => array (
 					'slug' => 'paqueteD',
 		        	'nombre' => $nombrePaqueteD,
-		        	'descripcion' => $descripcionPaqueteD
+		        	'descripcion' => $descripcionPaqueteD,
+		        	'img_filename' => $adjunto['imgPaqueteD']['filename'],
+		        	'img_url' => $adjunto['imgPaqueteD']['url'],
+		        	'img_type' => $adjunto['imgPaqueteD']['type']
 				),
 				'5' => array (
 					'slug' => 'paqueteE',
 		        	'nombre' => $nombrePaqueteE,
-		        	'descripcion' => $descripcionPaqueteE
+		        	'descripcion' => $descripcionPaqueteE,
+		        	'img_filename' => $adjunto['imgPaqueteE']['filename'],
+		        	'img_url' => $adjunto['imgPaqueteE']['url'],
+		        	'img_type' => $adjunto['imgPaqueteE']['type']
 				)
 			);
 
 			$error = false;
 
-			$results = $wpdb->get_col("SELECT slug FROM {$table_name}");
+			$all_slugs = $wpdb->get_col("SELECT slug FROM {$table_name}");
+
+			$datos = $wpdb->get_results("
+				SELECT id, slug, nombre, descripcion, img_filename, img_url, img_type
+				FROM {$table_name}", ARRAY_A);
+			
+			$results = self::mapear_arreglo($datos, 'slug');
 
 			foreach ($variables as $key => $paquete) {
+
+				if (is_null($results[$paquete['slug']]['img_filename'])) {
+					$img_filename = $paquete['img_filename'];
+				} else {
+					$img_filename = is_null($paquete['img_filename']) ? $results[$paquete['slug']]['img_filename'] : $paquete['img_filename'];
+				}
+
+				if (is_null($results[$paquete['slug']]['img_url'])) {
+					$img_url = $paquete['img_url'];
+				} else {
+					$img_url = is_null($paquete['img_url']) ? $results[$paquete['slug']]['img_url'] : $paquete['img_url'];
+				}
+
+				if (is_null($results[$paquete['slug']]['img_type'])) {
+					$img_type = $paquete['img_type'];
+				} else {
+					$img_type = is_null($paquete['img_type']) ? $results[$paquete['slug']]['img_type'] : $paquete['img_type'];
+				}
+				
 				$data = array(
+					//'id' => null,
 			        'slug' => $paquete['slug'],
 			        'nombre' => $paquete['nombre'],
-			        'descripcion' => $paquete['descripcion']
+			        'descripcion' => $paquete['descripcion'],
+			        'img_filename' => sanitize_text_field($img_filename),
+			        'img_url' => urlencode (stripslashes($img_url)),
+			        'img_type' => urlencode($img_type)
 		    	);
 
-		    	if (in_array($data['slug'], $results)) {
-		    		$wpdb->update($table_name, $data, array('slug' => $data['slug']));
+		    	if (in_array($data['slug'], $all_slugs)) {
+					$wpdb->update($table_name, $data, array('slug' => $data['slug']));
 		    	} else {
 		    		$wpdb->insert($table_name, $data);
 		    	}
-		    	
+				
+				
 
 
 		    	if (!empty($wpdb->last_error)) {
@@ -462,6 +529,8 @@ class Alarm_Estimate_Form_Admin {
 			            	)
 				  	);
 				} 
+
+				$wpdb->flush();
 			}
 
 			if (!$error) {
@@ -491,7 +560,7 @@ class Alarm_Estimate_Form_Admin {
 		if( isset( $_POST['package_form_nonce'] ) && wp_verify_nonce( $_POST['package_form_nonce'], 'package_form_nonce_code') ) {
 			
 			$results = $wpdb->get_results("
-				SELECT id, slug, nombre, descripcion
+				SELECT id, slug, nombre, descripcion, img_filename, img_url, img_type
 				FROM {$table_name}", ARRAY_A);
 
 			foreach ($results as $key=>$registro) {
@@ -547,6 +616,20 @@ class Alarm_Estimate_Form_Admin {
 		$data['paquete'] = $paquetes[$data['paquete']] ? $paquetes[$data['paquete']]['nombre'] : $data['paquete'];
 
 		return $data;
+	}
+
+	/**
+	 * Reemplazar las variables por sus valores del cliente en los
+	 * mensajes definidos en los paquetes
+	 *
+	 **/
+	public function mapear_arreglo($array='', $indice = '') {
+
+		foreach ($array as $key=>$datos) {
+			$mapa[$datos[$indice]] = $datos;
+			
+		}
+		return $mapa;
 	}
 
 

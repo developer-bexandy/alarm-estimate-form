@@ -2,3 +2,34 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+.img-preview {
+    width: 200px;
+    height: auto;
+}
+
+.waiting {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .waiting {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   waiting element will be visible */
+body.loading .waiting {
+    display: block;
+}

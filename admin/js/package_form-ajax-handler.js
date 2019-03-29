@@ -30,14 +30,16 @@
      */
      $(function() { 
 
-        var data = {
+        var imgPreview = $('#imgPaqueteA, #imgPaqueteB, #imgPaqueteC, #imgPaqueteD, #imgPaqueteE');
+
+        var refresh_data = {
                 action: 'get_package_form_data',
                 package_form_nonce: params.nonce,
             };
 
           $.post( 
               params.ajaxurl, 
-              data, 
+              refresh_data, 
               function(response) {
                 if (response.success) {
                     refrescarDatos(response.data);
@@ -49,6 +51,7 @@
               alertError('Algo salió mal!'); 
           });
 
+
         $( '#package_form_ajax' ).submit( function( event ) {
             
             event.preventDefault(); // Prevent the default form submit.            
@@ -58,65 +61,98 @@
             
             //add our own ajax check as X-Requested-With is not always reliable
             ajax_form_data = ajax_form_data+'&ajaxrequest=true&submit=Submit+Form';
-           
-           var data = {
-                action: 'save_package_form',
-                package_form_nonce: params.nonce,
-                datos: ajax_form_data
-            };
 
-            $.post( 
-              params.ajaxurl, 
-              data, 
-              function(response) {
-                if (response.success) {
-                    refrescarDatos(response.data);
-                    alertSuccess('Datos han sido guardados!');
-                } else {
-                    alertError('Algo salió mal!');
+            var data = new FormData();
+            data.append("action", "save_package_form");
+            data.append("package_form_nonce", params.nonce);
+            data.append("datos", ajax_form_data);
+            data.append('imgPaqueteA', $('#imgPaqueteA')[0].files[0]);
+            data.append('imgPaqueteB', $('#imgPaqueteB')[0].files[0]);
+            data.append('imgPaqueteC', $('#imgPaqueteC')[0].files[0]);
+            data.append('imgPaqueteD', $('#imgPaqueteD')[0].files[0]);
+            data.append('imgPaqueteE', $('#imgPaqueteE')[0].files[0]);
+
+            $.ajax({
+                url: params.ajaxurl,
+                type: 'POST',
+                data: data,
+                cache: false,
+                dataType: 'json',
+                processData: false, // Don't proccess the files
+                contentType: false, // Set content type to false as JQuery will tell the server its a query string request
+                success: function(response, textStatus, jqXHR) {
+                    if (response.success) {
+                        refrescarDatos(response.data);
+                        alertSuccess('Datos han sido guardados!');
+                    } else {
+                        alertError('Algo salió mal!');
+                    }
                 }
-            })
-            .fail(function(response) {
-                alertError('Algo salió mal!');
             });
+
         });
+
         
         function refrescarDatos(datos) {
             $('#nombrePaqueteA').val(datos[0].nombre);
             $('#descripcionPaqueteA').val(datos[0].descripcion);
+            $('img#previewPaqueteA').attr('src',datos[0].img_url);
             $('#nombrePaqueteB').val(datos[1].nombre);
             $('#descripcionPaqueteB').val(datos[1].descripcion);
+            $('img#previewPaqueteB').attr('src',datos[1].img_url);
             $('#nombrePaqueteC').val(datos[2].nombre);
             $('#descripcionPaqueteC').val(datos[2].descripcion);
+            $('img#previewPaqueteC').attr('src',datos[2].img_url);
             $('#nombrePaqueteD').val(datos[3].nombre);
             $('#descripcionPaqueteD').val(datos[3].descripcion);
+            $('img#previewPaqueteD').attr('src',datos[3].img_url);
             $('#nombrePaqueteE').val(datos[4].nombre);
             $('#descripcionPaqueteE').val(datos[4].descripcion);
+            $('img#previewPaqueteE').attr('src',datos[4].img_url);
         }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var self = input;
+                var reader = new FileReader();                
+
+                reader.onload = function (e) {
+                    $(self).parent().children('img').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+
+            }
+
+        }
+
+        imgPreview.change(function(){
+            readURL(this);
+        });
 
         function alertSuccess(message){
             $('#package_form_feedback').get(0).innerHTML = '<div class="alert alert-success" role="alert">'+message+'</div>';
             setTimeout(function(){
                 $('#package_form_feedback').get(0).innerHTML = '';
-            },3000);                
+            },5000);                
         }
 
         function alertError(message){
             $('#package_form_feedback').get(0).innerHTML = '<div class="alert alert-danger" role="alert">'+message+'</div>';
             setTimeout(function(){
                 $('#package_form_feedback').get(0).innerHTML = '';
-            },3000);                
+            },5000);                
         }
     });
 
     $(document).ajaxStart(function() { 
-        //console.log("ajax start");
+        console.log("ajax start");
         $('#waiting').addClass("loading"); 
         $('#waiting').show();    
     });
 
     $(document).ajaxStop(function() { 
-        //console.log("ajax stop");
+        console.log("ajax stop");
         $('#waiting').removeClass("loading");    
         $('#waiting').hide(); 
     });

@@ -16,6 +16,7 @@
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
 <div class="wrapper">
+  <div id="package_form_feedback"></div><!-- Noticaciones -->
 
   <form id="package_form_ajax" action="" method="POST" accept-charset="utf-8"> 
     <div class="accordion" id="accordionExample">    
@@ -40,6 +41,11 @@
               <textarea class="form-control" id="descripcionPaqueteA" name="descripcionPaqueteA" rows="3" placeholder="Escriba el mensaje de la oferta que será enviada al cliente vía whatsapp, puede incluir cualquiera de las variables disponibles"></textarea>
               <small id="emailHelp" class="form-text text-muted">variables disponibles: {{nombre-cliente}}, {{fecha-solicitud}}, {{correo-cliente}}, {{telefono-cliente}}.</small>
             </div><!-- form-group Descripcion Oferta A -->
+            <div class="form-group">
+              <label for="imgPaqueteA">Imagen Adjunto</label>
+              <input type="file" class="" id="imgPaqueteA" name="imgPaqueteA" placeholder="Seleccione una imágen para enviar adjunto a ésta oferta">
+              <img id="previewPaqueteA" src="" class="img-preview" with="200px">
+            </div><!-- form-group Imagen Oferta A -->            
           </div><!-- card-body Oferta A -->
         </div><!-- collapse Oferta A -->
       </div><!-- card Oferta A -->
@@ -64,6 +70,11 @@
               <textarea class="form-control" id="descripcionPaqueteB" name="descripcionPaqueteB" rows="3" placeholder="Escriba el mensaje de la oferta que será enviada al cliente vía whatsapp, puede incluir cualquiera de las variables disponibles"></textarea>
               <small id="emailHelp" class="form-text text-muted">variables disponibles: {{nombre-cliente}}, {{fecha-solicitud}}, {{correo-cliente}}, {{telefono-cliente}}.</small>
             </div><!-- form-group Descripcion Oferta B -->
+            <div class="form-group">
+              <label for="imgPaqueteB">Imagen Adjunto</label>
+              <input type="file" class="" id="imgPaqueteB" name="imgPaqueteB" placeholder="Seleccione una imágen para enviar adjunto a ésta oferta">
+              <img id="previewPaqueteB" src="" class="img-preview" with="200px">
+            </div><!-- form-group Imagen Oferta B -->
           </div><!-- card-body Oferta B -->
         </div><!-- collapse Oferta B -->
       </div><!-- card Oferta B -->
@@ -88,6 +99,11 @@
               <textarea class="form-control" id="descripcionPaqueteC" name="descripcionPaqueteC" rows="3" placeholder="Escriba el mensaje de la oferta que será enviada al cliente vía whatsapp, puede incluir cualquiera de las variables disponibles"></textarea>
               <small id="emailHelp" class="form-text text-muted">variables disponibles: {{nombre-cliente}}, {{fecha-solicitud}}, {{correo-cliente}}, {{telefono-cliente}}.</small>
             </div><!-- form-group Descripcion Oferta C -->
+            <div class="form-group">
+              <label for="imgPaqueteC">Imagen Adjunto</label>
+              <input type="file" class="" id="imgPaqueteC" name="imgPaqueteC" placeholder="Seleccione una imágen para enviar adjunto a ésta oferta">
+              <img id="previewPaqueteC" src="" class="img-preview" with="200px">
+            </div><!-- form-group Imagen Oferta C -->
           </div><!-- card-body Oferta C -->
         </div><!-- collapse Oferta C -->
       </div><!-- card Oferta C -->
@@ -112,6 +128,11 @@
               <textarea class="form-control" id="descripcionPaqueteD" name="descripcionPaqueteD" rows="3" placeholder="Escriba el mensaje de la oferta que será enviada al cliente vía whatsapp, puede incluir cualquiera de las variables disponibles"></textarea>
               <small id="emailHelp" class="form-text text-muted">variables disponibles: {{nombre-cliente}}, {{fecha-solicitud}}, {{correo-cliente}}, {{telefono-cliente}}.</small>
             </div><!-- form-group Descripcion Oferta D -->
+            <div class="form-group">
+              <label for="imgPaqueteD">Imagen Adjunto</label>
+              <input type="file" class="" id="imgPaqueteD" name="imgPaqueteD" placeholder="Seleccione una imágen para enviar adjunto a ésta oferta">
+              <img id="previewPaqueteD" src="" class="img-preview" with="200px">
+            </div><!-- form-group Imagen Oferta D -->
           </div><!-- card-body Oferta D -->
         </div><!-- collapse Oferta D -->
       </div><!-- card Oferta D -->
@@ -136,6 +157,11 @@
               <textarea class="form-control" id="descripcionPaqueteE" name="descripcionPaqueteE" rows="3" placeholder="Escriba el mensaje de la oferta que será enviada al cliente vía whatsapp, puede incluir cualquiera de las variables disponibles"></textarea>
               <small id="emailHelp" class="form-text text-muted">variables disponibles: {{nombre-cliente}}, {{fecha-solicitud}}, {{correo-cliente}}, {{telefono-cliente}}.</small>
             </div><!-- form-group Descripcion Oferta E -->
+            <div class="form-group">
+              <label for="imgPaqueteE">Imagen Adjunto</label>
+              <input type="file" class="" id="imgPaqueteE" name="imgPaqueteE" placeholder="Seleccione una imágen para enviar adjunto a ésta oferta">
+              <img id="previewPaqueteE" src="" class="img-preview" with="200px">
+            </div><!-- form-group Imagen Oferta E -->
           </div><!-- card-body Oferta E -->
         </div><!-- collapse Oferta E -->
       </div><!-- card Oferta E -->
@@ -146,7 +172,7 @@
     </div>
   </form>
 
-  <div id="package_form_feedback"></div><!-- Noticaciones -->
+  
 
   <div id="waiting" class="waiting"></div><!-- Place at bottom of page - waiting ajax animation -->
   
