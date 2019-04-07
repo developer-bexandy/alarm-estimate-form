@@ -94,6 +94,9 @@
 
         
         function refrescarDatos(datos) {
+            if (datos === undefined || datos === null) {
+                 return true;
+            }
             $('#nombrePaqueteA').val(datos[0].nombre);
             $('#descripcionPaqueteA').val(datos[0].descripcion);
             $('img#previewPaqueteA').attr('src',datos[0].img_url);

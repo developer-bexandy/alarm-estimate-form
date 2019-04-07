@@ -30,9 +30,10 @@ class Alarm_Estimate_Form_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+		self::delete_paquete_table('alarm_estimate_form');
+		self::delete_paquete_table('alarm_estimate_form_paquete');
 		self::alarm_estimate_form_table();
 		self::alarm_estimate_form_paquete_table();
-		//self::alter_paquete_table();
 	}
 
 	function alarm_estimate_form_table() {
@@ -92,20 +93,11 @@ class Alarm_Estimate_Form_Activator {
 	 	}
 	}
 
-	function alter_paquete_table() {
+	function delete_paquete_table($table = '') {
 		global $wpdb;
 	 	$charset_collate = $wpdb->get_charset_collate();
-	 	$table_name = $wpdb->prefix . "alarm_estimate_form_paquete";
-	 	$sql = "ALTER TABLE `$table_name` 
-	 			ADD COLUM `img_filename` VARCHAR(255) DEFAULT NULL,
-	 			ADD COLUM `img_url` VARCHAR(255) DEFAULT NULL,
-	 			ADD COLUM `img_type` VARCHAR(20) DEFAULT NULL;";
-	 	require_once(ABSPATH . "wp-admin/includes/upgrade.php");
-	 		dbDelta($sql);
-
-	 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
-	 		require_once(ABSPATH . "wp-admin/includes/upgrade.php");
-	 		dbDelta($sql);
-	 	}
+	 	$table_name = $wpdb->prefix . $table;
+	 	$sql = "DROP TABLE IF EXISTS $table_name;";
+	 	$wpdb->query($sql);
 	}
 }

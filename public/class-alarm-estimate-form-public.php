@@ -23,8 +23,6 @@
 
 require_once( plugin_dir_path( __FILE__ ) .'/../vendor/autoload.php');
 
-use Authy\AuthyApi;
-use Twilio\Rest\Client;
 
 class Alarm_Estimate_Form_Public {
 
@@ -150,22 +148,6 @@ class Alarm_Estimate_Form_Public {
 
 
 	/**
-	 * Designs for displaying Notices
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var $message - String - The message we are displaying
-	 * @var $status   - Boolean - its either true or false
-	 **/
-	public function return_success($message, $status = true) {
-		$class =  ($status) ? 'notice notice-success' : 'notice notice-error';
-		$message = __( $message, 'sample-text-domain' );
-		$response = sprintf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
-
-		return $response;
-	}
-
-	/**
 	 * Displays Error Notices
 	 *
 	 * @since    1.0.0
@@ -185,13 +167,13 @@ class Alarm_Estimate_Form_Public {
 	 * @since    1.0.0
 	 * @since    1.0.0
 	 **/
-	public function DisplaySuccess($message, $country_code = '', $phone_number = '', $via = '' ) { 
+	public function DisplaySuccess($message, $country_code = '', $phone_number = '', $request_id = '' ) { 
 		wp_send_json_success(
 			    array( 
             		'message' => $message,
             		'country_code' => $country_code,
             		'phone_number' => $phone_number,
-            		'via' => $via
+            		'request_id' => $request_id
             	)
 			 );
 	}
@@ -206,30 +188,45 @@ class Alarm_Estimate_Form_Public {
 
 		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
 		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
-		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
+		$cancel = (isset($_POST['data']['cancel']) )  ? $_POST['data']['cancel']  : false;
+		$request_id = (isset($_POST['data']['request_id']) ) ? $_POST['data']['request_id'] : '';
 
 		//gets our api details from the database.
 		$api_details = get_option('alarm-estimate-form'); #alarm-estimate-form is what we use to identify our option, it can be anything
 
 		if(is_array($api_details) AND count($api_details) != 0) {
-			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
+			$NEXMO_API_KEY = $api_details['nexmo_api_key'];
+			$NEXMO_API_SECRET = $api_details['nexmo_api_secret'];
 		}
 
-		try {
-			/*
-			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
-			$response = $authy_api->phoneVerificationStart($phone_number, $country_code, $via);
+		$basic  = new \Nexmo\Client\Credentials\Basic($NEXMO_API_KEY , $NEXMO_API_SECRET);
+		$client = new \Nexmo\Client($basic);
 
-			if ($response->ok()) {
-                self::DisplaySuccess($response->message(), $country_code, $phone_number, $via);
-            } else {
-                self::DisplayError($response->errors()->message);
-            }		
-			*/
-			self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $via);
+		$destination = str_replace('+', '', $country_code.$phone_number);
+
+		try {
+
+			if ($cancel || $request_id != '') {
+			    $result = $client->verify()->cancel($request_id);
+			} 
+			
+			$verification = $client->verify()->start([ 
+				'number' => $destination,
+				'brand'  => 'Alarmas Plus',
+				'code_length'  => '4']);
+				
+			$request_id = $verification->getRequestId();
+
+			if ($verification->getStatus() == '0') {
+	            self::DisplaySuccess('Código Enviado', $country_code, $phone_number, $request_id);
+	        } else {
+	            self::DisplayError('Error Code: '.$verification->getStatus());
+	        }		
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
+
+		self::DisplaySuccess("Código Enviado", $country_code, $phone_number, $request_id);
 	}
 
 	/**
@@ -242,30 +239,35 @@ class Alarm_Estimate_Form_Public {
 		
 		$country_code = (isset($_POST['data']['country_code']) ) ? $_POST['data']['country_code'] : '';
 		$phone_number = (isset($_POST['data']['phone_number']) )  ? $_POST['data']['phone_number']  : '';
-		$via = (isset($_POST['data']['via']) ) ? $_POST['data']['via'] : '';
 		$verification_code = (isset($_POST['data']['verification_code']) ) ? $_POST['data']['verification_code'] : '';
-
+		$request_id = (isset($_POST['data']['verification_code']) ) ? $_POST['data']['request_id'] : '';
 		//gets our api details from the database.
 		$api_details = get_option('alarm-estimate-form'); #alarm-estimate-form is what we use to identify our option, it can be anything
 
 		if(is_array($api_details) AND count($api_details) != 0) {
-			$PRODUCTION_API_KEY = $api_details['prod_api_key'];
+			$NEXMO_API_KEY = $api_details['nexmo_api_key'];
+			$NEXMO_API_SECRET = $api_details['nexmo_api_secret'];
 		}
 
+		$basic  = new \Nexmo\Client\Credentials\Basic($NEXMO_API_KEY, $NEXMO_API_SECRET);
+		$client = new \Nexmo\Client($basic);
+
+
 		try {
-			/*
-			$authy_api = new AuthyApi($PRODUCTION_API_KEY);
-			$response = $authy_api->phoneVerificationCheck($phone_number, $country_code, $verification_code);
-			if ($response->ok()) {
-                self::DisplaySuccess($response->message(), $country_code, $phone_number, $via);
+			$verification = new \Nexmo\Verify\Verification($request_id);
+			$result = $client->verify()->check($verification, $verification_code);
+
+
+			if ($verification->getStatus() == '0') {
+                self::DisplaySuccess('Número Verificado', $country_code, $phone_number, $request_id);
             } else {
-                self::DisplayError($response->errors()->message);
-            }	
-            */
-            self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $via);
+                self::DisplayError('Error Code: '.$verification->getStatus());
+            }	          
 		} catch (Exception $e) {
 			self::DisplayError( $e->getMessage() );
 		}
+
+		self::DisplaySuccess("Número Verificado", $country_code, $phone_number, $request_id);
 	}
 
 	/**
@@ -344,12 +346,8 @@ class Alarm_Estimate_Form_Public {
 			$insert = $wpdb->insert($table_name,$render_variables);
 
 			if ($insert) {
-				if ($api_details['api_seleccion'] == 'twilio') {
-					self::send_whatsapp_message($render_variables);	
-				} else {
-					self::send_message_apiwha($render_variables);
-				}
-							
+				self::send_message_apiwha($render_variables);
+	
 			} else {
 				self::DisplayError( $wpdb->last_error );
 			}
@@ -360,46 +358,6 @@ class Alarm_Estimate_Form_Public {
 							'back_link' => 'index.php',
 
 					) );
-		}
-	}
-
-	/**
-	 * Función que procesará el envío del mensaje por whatsapp
-	 *
-	 **/
-	public function send_whatsapp_message($data='') {
-
-		$to = (isset($data['telefono']) ) ? 'whatsapp:'.$data['codigo_area'].$data['telefono'] : '';
-		$sender_id = 'whatsapp:'.'+14155238886';
-		$message = 'Your Wordpress.Desktop order of Estimate has shipped and should be delivered on '.$data['fecha'].'. Details : Websendex Sr/a. '.$data['nombre'].' soy Manuel Soto su asesor de seguridad de Tyco.  Le agradezco que me haya atendido y procedo a mandarle la información de la oferta tal y como hemos acordado, para cualquier duda o aclaración de la misma le recuerdo que me tiene disponible, mi teléfono directo es el 617079129 (también whatsapp). Adjunto le envío la información sobre sistema de alarma Visonic de Tyco con cámara integrada y el nuevo servicio de asistencia legalitas. ¡VENTAJAS PROMOCIÓN ONLINE!  Kit Hogar Tyco Alert + Servicio Legalitas: Tras la conversación telefónica mantenida, le indico como se quedaría su configuración con un total de: 2 Vídeo detectores. 1 Detectores de movimiento (O 1 contacto magnético). 1 Central de alarma con pantalla Módulo GSM/GPRS. Sirena de sonido ascendente con 81 decibelios (incluida en central). 1 Teclado extra bidireccional portátil (incluido emergencias médicas e incendios). 1 Mando a distancia / O pulsador SOS. Carteles exteriores. Los servicios que van incluidos en la cuota son: Mantenimiento 100% incluido. Envío de los vídeos del salto de alarma a su móvil de forma Inmediata. Conexión a Central Receptora de Alarmas las 24h del día, los 365 días del año. Supervisión de la línea GPRS cada 10 minutos. Envío de email con el control de todas las entradas y salidas de los usuarios de la alarma. Aviso de corte de luz. Anti-inhibidor de alta potencia. Conexión Multivía - doble conexión. Servicio asistencia Legalitas.';
-
-		//gets our api details from the database.
-		$api_details = get_option('alarm-estimate-form'); 
-
-		if(is_array($api_details) AND count($api_details) != 0) {
-			$TWILIO_SID = $api_details['api_sid'];
-			$TWILIO_TOKEN = $api_details['api_auth_token'];
-		}
-
-		try {
-			$to = explode(',', $to);
-			$client = new Client($TWILIO_SID, $TWILIO_TOKEN);
-			$response = $client->messages->create(
-				$to,
-				array(
-					'from' => $sender_id,
-					'body' => $message
-				)
-			);
-
-			if (is_null($response->errorMessage)) {
-		        self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
-		    } else {
-		        self::DisplayError($response->errorMessage);
-		    }	
-		    //self::DisplaySuccess("Registro insertado en la BDD y enviado por Whatsapp");
-		} catch (Exception $e) {
-			self::DisplayError( $e->getMessage() );
 		}
 	}
 
@@ -439,6 +397,7 @@ class Alarm_Estimate_Form_Public {
 			$api_url .= "&number=". urlencode ($destination);
 			$api_url .= "&text=". urlencode ($mensaje); 
 
+
 			try {
 			
 				$response = wp_remote_get( $api_url );
@@ -477,14 +436,15 @@ class Alarm_Estimate_Form_Public {
 				$error = true;
 				$error_message .= $e->getMessage().' ';
 			}
-			
+
 		}
 		
 		if (!is_null($image)) {
 			$api_url = "http://panel.apiwha.com/send_message.php"; 
 			$api_url .= "?apikey=". urlencode ($my_apikey); 
 			$api_url .= "&number=". urlencode ($destination);
-			$api_url .= "&text=". urlencode ($image); 
+			$api_url .= "&text=". self::encodeImg(urlencode ($image)); 
+
 
 			try {
 			
@@ -524,6 +484,7 @@ class Alarm_Estimate_Form_Public {
 				$error = true;
 				$error_message .= $e->getMessage().' ';
 			}
+
 		}
 
 		if (is_null($mensaje) && is_null($image)) {
@@ -531,6 +492,7 @@ class Alarm_Estimate_Form_Public {
 			$error_message .= "El paquete no tiene mensajes de whatsapp configurados!!";
 		}
 		
+		//$success_message = self::encodeImg(urlencode ($image));
 		
 		
 		if (!$error) {
@@ -580,4 +542,15 @@ class Alarm_Estimate_Form_Public {
 		return $message;
 	}
 
+	/**
+	 * Reemplazar las variables por sus valores del cliente en los
+	 * mensajes definidos en los paquetes
+	 *
+	 **/
+	public function encodeImg($url='') {
+
+		$url = str_replace ('%3A', ':', $url);
+		$url = str_replace ('%2F', '/', $url);
+		return $url;
+	}
 }

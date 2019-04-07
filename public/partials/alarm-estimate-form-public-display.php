@@ -148,6 +148,7 @@
                     -->
                     <input type="text" id="phone_number" name="phone_number"  placeholder="987654321" required class="question__input"/>
                     <input type="hidden" id="via" name="via" value="sms" />
+                    <input type="hidden" id="request_id" name="request_id" value="" />
                     <div class="question__button" id="request_verification">Verificar</div>
                 </div>
                 <div class="center_text">
@@ -163,12 +164,10 @@
                     <div class="question__button" id="verify_token">Enviar</div>
                 </div>                
                 <div class="phone-verification-code-links">
-                    <p id="change_via" class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
-
                     <div class="dont_receive_code">
                         <p>No ha recibido un código?</p>
                         <ul id="verification-resend-code" class="list-unstyled">
-                            <li id="resend_counter" class="resend_counter">Reenviar código (15)</li>
+                            <li id="resend_counter" class="resend_counter">Enviando código de verificación por SMS (125)</li>
                             <li><a id="verification-resend-link" class="verification-resend-link oculto">Reenviar Código</a></li>
                             <li><a id="verification-change-link" class="verification-change-link oculto">Cambiar número telefónico</a></li>
                         </ul>
@@ -314,12 +313,11 @@
                     <div class="question__button" id="verify_token_business">Enviar</div>
                 </div>                
                 <div class="phone-verification-code-links">
-                    <p id="change_via_business" class="change_via"><a> Desea verificar con una llamada en lugar de SMS?</a></p>
 
                     <div class="dont_receive_code">
                         <p>No ha recibido un código?</p>
                         <ul id="verification-resend-code_business" class="list-unstyled">
-                            <li id="resend_counter_business" class="resend_counter">Reenviar código (15)</li>
+                            <li id="resend_counter_business" class="resend_counter">Enviando código de verificación por SMS (125)</li>
                             <li><a id="verification-resend-link_business" class="verification-resend-link oculto">Reenviar Código</a></li>
                             <li><a id="verification-change-link_business" class="verification-change-link oculto">Cambiar número telefónico</a></li>
                         </ul>

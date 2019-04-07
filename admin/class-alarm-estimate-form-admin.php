@@ -218,22 +218,14 @@ class Alarm_Estimate_Form_Admin {
 
 		register_setting( $this->plugin_name, $this->plugin_name, array($this, 'plugin_options_validate') );
 
-		add_settings_section('alarm_estimate_form_settings', 'CONFIGURACIÓN DE API TWILIO - APIWHA', array($this, 'alarm_estimate_form_section_text'), 'alarm-estimate-form-settings-page');
+		add_settings_section('alarm_estimate_form_settings', 'CONFIGURACIÓN DE API NEXMO - APIWHA', array($this, 'alarm_estimate_form_section_text'), 'alarm-estimate-form-settings-page');
 
 
-		add_settings_field('api_sid', 'API SID', array($this, 'sendex_setting_sid'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
+		add_settings_field('nexmo_api_key', 'NEXMO API KEY', array($this, 'nexmo_api_key'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 
-		add_settings_field('api_auth_token', 'API AUTH TOKEN', array($this, 'sendex_setting_token'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
-
+		add_settings_field('nexmo_api_secret', 'NEXMO API SECRET', array($this, 'nexmo_api_secret'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 		
-
-		add_settings_field('prod_api_key', 'PRODUCTION API KEY', array($this, 'alarm_estimate_form_setting_key'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
-
-
-
 		add_settings_field('apiwha_apikey', 'APIWHA API KEY', array($this, 'alarm_estimate_form_apiwha_apikey'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
-
-		add_settings_field('api_seleccion', 'SELECCIONAR API PARA ENVIO DE WHATSAPP', array($this, 'alarm_estimate_form_api_seleccion'), 'alarm-estimate-form-settings-page', 'alarm_estimate_form_settings');
 
 	}
 
@@ -244,41 +236,30 @@ class Alarm_Estimate_Form_Admin {
 	 *
 	 **/
 	public function alarm_estimate_form_section_text() {
-		echo '<h3>Key y Token de las diferentes API utilizadas</h3>';
+		echo '<h3>Key y Secret de las diferentes API utilizadas</h3>';
 	}
 
 	/**
 	 * Renderizar el campo sid
 	 *
 	 **/
-	public function sendex_setting_sid() {
+	public function nexmo_api_key() {
 		$options = get_option($this->plugin_name);
-		echo "<input id='twilio_api_sid' name='$this->plugin_name[api_sid]' size='40' type='text' value='{$options['api_sid']}' />
-			<p class='description'>Twilio - utilizado para envío de mensajes por Whatsapp</p>";
+		echo "<input id='twilio_api_sid' name='$this->plugin_name[nexmo_api_key]' size='40' type='text' value='{$options['nexmo_api_key']}' />
+			<p class='description'>Nexmo - utilizado para verificación de teléfono por SMS</p>";
 	}
 
 	/**
 	 * Renderizar el campo auth_token
 	 *
 	 **/
-	public function sendex_setting_token() {
+	public function nexmo_api_secret() {
 		$options = get_option($this->plugin_name);
-		echo "<input id='twilio_api_auth_token' name='$this->plugin_name[api_auth_token]' size='40' type='text' value='{$options['api_auth_token']}' />
-			<p class='description'>Twilio - utilizado para envío de mensajes por Whatsapp</p>";
+		echo "<input id='twilio_api_auth_token' name='$this->plugin_name[nexmo_api_secret]' size='40' type='text' value='{$options['nexmo_api_secret']}' />
+			<p class='description'>Nexmo - utilizado para verificación de teléfono por SMS</p>";
 	}
-
 	
-	/**
-	 * Renderizar el campo prod_api_key
-	 *
-	 **/
-	public function alarm_estimate_form_setting_key() {
-		$options = get_option($this->plugin_name);
-		echo "<input id='twilio_prod_api_key' name='$this->plugin_name[prod_api_key]' size='40' type='text' value='{$options['prod_api_key']}' />
-			<p class='description'>Twilio - utilizado para verificación de números telefónicos por SMS o llamadas</p>";
-	}
 
-	
 	/**
 	 * Renderizar el campo apiwha_apikey
 	 *
@@ -289,31 +270,15 @@ class Alarm_Estimate_Form_Admin {
 			<p class='description'>APIWHA - utilizado para envío de mensajes por Whatsapp</p>";
 	}
 
-	/**
-	 * Renderizar el campo api_seleccion
-	 *
-	 **/
-	public function alarm_estimate_form_api_seleccion() {
-		$options = get_option($this->plugin_name);
-
-		// Get the value of this option.
-		$checked_twilio = checked($options['api_seleccion'],'twilio',true);
-		$checked_apiwha = checked($options['api_seleccion'],'apiwha',true);
-
-		echo "<label><input id='twilio_api_seleccion' type='radio' name='$this->plugin_name[api_seleccion]' value='twilio' {$checked_twilio} class='tog' > TWILIO</label>
-        <label><input id='apiwha_api_seleccion' type='radio' name='$this->plugin_name[api_seleccion]' value='apiwha' {$checked_apiwha} class='tog' > APIWHA</label>";
-	}
 
 	/**
 	 * Sanitizar todos los campos de entrada.
 	 *
 	 **/
 	public function plugin_options_validate($input) {
-		$newinput['api_sid'] = trim($input['api_sid']);
-		$newinput['api_auth_token'] = trim($input['api_auth_token']);
-		$newinput['prod_api_key'] = trim($input['prod_api_key']);
+		$newinput['nexmo_api_key'] = trim($input['nexmo_api_key']);
+		$newinput['nexmo_api_secret'] = trim($input['nexmo_api_secret']);
 		$newinput['apiwha_apikey'] = trim($input['apiwha_apikey']);
-		$newinput['api_seleccion'] = trim($input['api_seleccion']);
 
 		return $newinput;
 	}
